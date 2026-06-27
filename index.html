@@ -223,82 +223,6 @@
   @media print{.toolbar,.btn,.tabs,.rec-form,.log-del{display:none}body{background:#fff}}
 
   /* ===== モバイル対応 ===== */
-  @media(max-width:640px){
-    /* ヘッダー */
-    .app-header{padding:0 12px;height:52px;}
-    .app-header .logo span{font-size:14px;}
-    .app-header .logo-icon{width:28px;height:28px;font-size:14px;}
-    .tips-btn{font-size:11px;padding:6px 8px;gap:4px;}
-    #favCount{display:none;}
-    /* ヘッダーのボタンエリアを縦に詰める */
-    .app-header > div{gap:4px;}
-
-    /* タブナビ */
-    .main-tab-nav{top:52px;}
-    .main-tab-nav li{padding:10px 10px 8px;font-size:11px;gap:4px;}
-    .main-tab-nav li svg{width:13px;height:13px;}
-
-    /* メインラップ */
-    .main-wrap{padding:12px 10px 60px;}
-
-    /* カード */
-    .card{padding:14px 12px;}
-    .card h2{font-size:14px;}
-    .grid{gap:12px;}
-
-    /* 統計カード */
-    .stats{grid-template-columns:1fr 1fr;}
-    .stat .v{font-size:22px;}
-
-    /* チップ（daybreak） */
-    .daybreak{flex-wrap:wrap;gap:5px;}
-    .chip{font-size:11px;padding:4px 8px;}
-
-    /* テーブル */
-    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-    table{min-width:480px;font-size:12px;}
-
-    /* フォーム */
-    .rec-form{gap:8px;}
-    .rec-form .f{min-width:calc(50% - 8px);}
-    .rec-form .f.note{min-width:100%;}
-    .rec-form input[type=number]{width:70px;}
-
-    /* KPI */
-    .kpi{grid-template-columns:1fr 1fr;}
-    .kpi .b .v{font-size:18px;}
-
-    /* チェックリスト行 */
-    .cl-row{flex-wrap:wrap;gap:4px;}
-    .cl-row label{width:100%;}
-    .cl-sub-chk{font-size:9px;padding:2px 5px;}
-    .cl-time{min-width:44px;}
-
-    /* ログ行 */
-    .log-row{flex-wrap:wrap;gap:4px;}
-    .log-row .ld{width:auto;}
-    .log-row .ls{min-width:auto;}
-    .log-row .lnote{width:100%;order:10;}
-
-    /* モーダル */
-    .modal{padding:18px 14px;border-radius:16px;}
-    .modal-header{gap:10px;}
-
-    /* IO グリッド */
-    .io-grid{grid-template-columns:1fr;}
-
-    /* パスヘッド */
-    .passhead{flex-wrap:wrap;gap:8px;}
-
-    /* IO バー */
-    .splitbar .seg{font-size:10px;padding:6px 4px;}
-  }
-
-  @media(max-width:400px){
-    .app-header .logo span{display:none;} /* 超小画面ではロゴ文字を非表示 */
-    .main-tab-nav li{padding:8px 7px 7px;font-size:10px;}
-    .stats{grid-template-columns:1fr 1fr;}
-  }
 
   /* ── Tips Button ── */
   .tips-btn{
@@ -389,6 +313,76 @@
   .main-tab-nav li:hover svg,.main-tab-nav li.active svg{opacity:1;}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;animation:tabFadeIn .25s ease;}
+
+  /* ── ハンバーガーメニュー ── */
+  #burgerBtn{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:8px;border-radius:8px;flex:none;}
+  #burgerBtn:hover{background:rgba(255,255,255,.15);}
+  #currentTabName{display:none;font-size:13px;font-weight:700;color:#fff;opacity:.9;}
+  .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;}
+  .drawer-overlay.open{display:block;}
+  #mobileDrawer{position:fixed;top:0;left:-280px;width:270px;height:100%;background:#fff;z-index:450;
+    box-shadow:4px 0 20px rgba(27,42,74,.18);transition:left .25s ease;overflow-y:auto;padding-bottom:40px;}
+  #mobileDrawer.open{left:0;}
+  .drawer-head{background:linear-gradient(135deg,#1b2a4a,#2c3e6b);color:#fff;padding:20px 16px 16px;
+    display:flex;align-items:center;gap:10px;}
+  .drawer-head .logo-icon{background:var(--accent);border-radius:8px;width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;flex:none;}
+  .drawer-title{font-size:14px;font-weight:800;}
+  .drawer-sub{font-size:11px;opacity:.7;margin-top:2px;}
+  .dtab-item{display:flex;align-items:center;gap:12px;padding:14px 18px;
+    border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .15s;color:var(--ink);}
+  .dtab-item:hover,.dtab-item.active{background:var(--accent-soft);color:var(--accent);}
+  .dtab-item svg{flex:none;opacity:.7;}
+  .dtab-item:hover svg,.dtab-item.active svg{opacity:1;}
+  .dtab-label{font-size:14px;font-weight:700;}
+
+  @media(max-width:640px){
+    #burgerBtn{display:flex;align-items:center;justify-content:center;}
+    #currentTabName{display:block;}
+    .main-tab-nav{display:none;}
+    .app-header{height:52px;padding:0 12px;}
+    .app-header .logo span{font-size:13px;}
+    .app-header > div:last-child{gap:4px;}
+    .tips-btn{font-size:11px;padding:5px 8px;gap:3px;}
+    .tips-btn span[id=favCount]{display:none;}
+    .main-wrap{padding:12px 10px 60px;}
+    .card{padding:14px 12px;}
+    .card h2{font-size:14px;}
+    .grid{gap:12px;}
+    .field-grid{grid-template-columns:1fr 1fr;}
+    .field-grid input[type=date]{font-size:13px;padding:6px 8px;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .stat .v{font-size:20px;}
+    .daybreak{flex-wrap:wrap;gap:5px;}
+    .chip{font-size:11px;padding:4px 8px;}
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{min-width:460px;font-size:11.5px;}
+    .est-controls{grid-template-columns:1fr 1fr;}
+    .rec-form{gap:8px;}
+    .rec-form .f{min-width:calc(50% - 8px);}
+    .rec-form .f.note{min-width:100%;}
+    .rec-form input[type=number]{width:70px;}
+    .kpi{grid-template-columns:1fr 1fr;}
+    .kpi .b .v{font-size:17px;}
+    .cl-row{flex-wrap:wrap;gap:4px;}
+    .cl-row label{width:100%;}
+    .cl-sub-chk{font-size:9px;padding:2px 5px;}
+    .cl-time{min-width:40px;font-size:11px;}
+    .log-row{flex-wrap:wrap;gap:4px;padding:8px 4px;}
+    .log-row .ld{font-size:11px;}
+    .log-row .ls{min-width:auto;font-size:12px;}
+    .log-row .lnote{width:100%;order:10;}
+    .modal{padding:16px 12px;border-radius:14px;}
+    .io-grid{grid-template-columns:1fr;}
+    .passhead{flex-wrap:wrap;gap:8px;}
+    .splitbar .seg{font-size:10px;padding:5px 4px;}
+    .chartbox{overflow-x:auto;}
+  }
+  @media(max-width:400px){
+    .app-header .logo span{display:none;}
+    .field-grid{grid-template-columns:1fr;}
+    .kpi{grid-template-columns:1fr 1fr;}
+  }
   .main-wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px;}
 </style>
 </head>
@@ -396,11 +390,17 @@
 
 <!-- 固定ヘッダー -->
 <header class="app-header">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+  <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+    <button id="burgerBtn" aria-label="メニュー">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      </div>
+      <span>行政書士試験 学習計画</span>
     </div>
-    <span>行政書士試験 学習計画</span>
+    <span id="currentTabName">概要・設定</span>
   </div>
   <div style="display:flex;gap:8px">
     <button class="tips-btn" id="openFavBtn" style="background:rgba(255,255,255,.15)">
@@ -413,6 +413,22 @@
     </button>
   </div>
 </header>
+
+<!-- モバイル用ドロワー -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div id="mobileDrawer">
+  <div class="drawer-head">
+    <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+    <div><div class="drawer-title">行政書士試験</div><div class="drawer-sub">学習計画アプリ</div></div>
+  </div>
+  <div class="dtab-item active" data-tab="tab1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dtab-label">概要・設定</span></div>
+  <div class="dtab-item" data-tab="tab2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg><span class="dtab-label">時間配分</span></div>
+  <div class="dtab-item" data-tab="tab3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span class="dtab-label">テキスト計画</span></div>
+  <div class="dtab-item" data-tab="tab4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="dtab-label">チェックリスト</span></div>
+  <div class="dtab-item" data-tab="tab5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span class="dtab-label">学習記録</span></div>
+  <div class="dtab-item" data-tab="tab6"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span class="dtab-label">出題傾向</span></div>
+  <div class="dtab-item" data-tab="tab7"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span class="dtab-label">AI教師</span></div>
+</div>
 
 <!-- タブナビゲーション -->
 <nav class="main-tab-nav">
@@ -715,12 +731,25 @@
       <p class="hint" style="margin-top:-6px">演習結果を記録すると、あなたの得意・不得意を分析して今やるべき学習をアドバイスします。</p>
 
       <!-- 画像OCR -->
-      <div id="ocrBox" style="border:2px dashed var(--line);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center;cursor:pointer;transition:border-color .2s" onclick="document.getElementById('ocrInput').click()">
-        <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:6px">答案用紙・問題冊子の写真をアップロード</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">スマホのカメラで撮影してそのまま送信 → AIが自動読み取り（Gemini APIキー必要）</div>
-        <div id="ocrStatus" style="margin-top:8px;font-size:12px;font-weight:700"></div>
+      <div id="ocrBox" style="border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px">
+        <input type="file" id="ocrInput" accept="image/*" style="display:none">
+        <input type="file" id="ocrInputCamera" accept="image/*" capture="environment" style="display:none">
+        <div style="text-align:center;margin-bottom:10px">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:4px">答案用紙・問題冊子を読み取る</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">AIが科目・正解数を自動入力（Gemini APIキー必要）</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px" onclick="document.getElementById('ocrInputCamera').click()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            カメラで撮影
+          </button>
+          <button class="btn primary" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px" onclick="document.getElementById('ocrInput').click()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            アルバムから選択
+          </button>
+        </div>
+        <div id="ocrStatus" style="margin-top:8px;font-size:12px;font-weight:700;text-align:center"></div>
       </div>
 
       <!-- 演習記録フォーム -->
@@ -979,7 +1008,7 @@ let logs=[];
 function defaults(){
   const today=new Date();
   const examYear=(today.getMonth()>10||(today.getMonth()===10&&today.getDate()>14))?today.getFullYear()+1:today.getFullYear();
-  return {startDate:ymd(today),examDate:ymd(secondSundayOfNov(examYear)),
+  return {startDate:'2026-06-20',examDate:ymd(secondSundayOfNov(examYear)),
     weekdayHours:2,weekendHours:6,bufferDays:3,holidayAsWeekend:true,
     ioInput:45,minPerPage:4,k2:60,k3:40,allocation:Object.assign({},recommendedTable())};
 }
@@ -1469,6 +1498,13 @@ els.examDate.addEventListener('change',()=>{const ex=new Date(els.examDate.value
     document.querySelectorAll('.tab-panel').forEach(p => {
       p.id === target ? p.classList.add('active') : p.classList.remove('active');
     });
+    // ドロワーのactive状態を同期
+    document.querySelectorAll('#mobileDrawer .dtab-item').forEach(d => {
+      d.dataset.tab === target ? d.classList.add('active') : d.classList.remove('active');
+    });
+    const label = li.textContent.trim();
+    const nameEl = document.getElementById('currentTabName');
+    if(nameEl) nameEl.textContent = label;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
@@ -1899,7 +1935,7 @@ try { initQuizForm(); } catch(e){ console.warn('initQuizForm:', e); }
 try { renderQuizTab(); } catch(e){ console.warn('renderQuizTab:', e); }
 
 /* 画像OCR */
-document.getElementById('ocrInput').addEventListener('change', async function(){
+async function handleOcrFile(file){
   const file = this.files[0];
   if(!file) return;
   const apiKey = localStorage.getItem(LS_GKEY);
@@ -1990,9 +2026,52 @@ JSONフォーマット：{"source":"教材名","results":[{"subjectId":"科目ID
     statusEl.style.color = '#f87171';
   } finally {
     ocrBox.style.borderColor = 'var(--line)';
-    this.value = '';
+    if(file._inputEl) file._inputEl.value = '';
   }
+}
+['ocrInput','ocrInputCamera'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', function(){
+    if(!this.files[0]) return;
+    const f = this.files[0];
+    f._inputEl = this;
+    handleOcrFile(f);
+  });
 });
+
+/* ============================================================
+   ハンバーガーメニュー（モバイル用）
+   ============================================================ */
+(function(){
+  const burger = document.getElementById('burgerBtn');
+  const drawer = document.getElementById('mobileDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  if(!burger) return;
+
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); }
+
+  burger.addEventListener('click', ()=>{ drawer.classList.contains('open') ? closeDrawer() : openDrawer(); });
+  overlay.addEventListener('click', closeDrawer);
+
+  // ドロワー内タブボタンのクリック
+  drawer.querySelectorAll('[data-tab]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.dataset.tab;
+      // タブパネル切り替え
+      document.querySelectorAll('.tab-panel').forEach(p=>{
+        p.id===target ? p.classList.add('active') : p.classList.remove('active');
+      });
+      // デスクトップ用タブのactive更新
+      document.querySelectorAll('#mainTabNav li').forEach(li=>{
+        li.dataset.tab===target ? li.classList.add('active') : li.classList.remove('active');
+      });
+      // 現在タブ名を更新
+      document.getElementById('currentTabName').textContent = btn.querySelector('.dtab-label').textContent;
+      window.scrollTo({top:0,behavior:'smooth'});
+      closeDrawer();
+    });
+  });
+})();
 
 </script>
 </body>

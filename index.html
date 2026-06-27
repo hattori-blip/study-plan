@@ -16,11 +16,12 @@
     --radius:14px;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;overflow-x:hidden;width:100%;}
-  body{
+  html{margin:0;padding:0;}
+  body{margin:0;padding:0;
     font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.6; font-size:15px;
     -webkit-font-smoothing:antialiased;
+    min-height:100vh; overflow-x:hidden; position:relative;
   }
   .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
   header.app{
@@ -78,8 +79,8 @@
   .daybreak .chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
   .daybreak .chip b{font-size:14px}
 
-  .tbl-wrap{overflow-x:auto;margin:0 -4px;max-width:100%;}
-  table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
   thead th{background:#f8fafc;color:var(--muted);font-size:11px;font-weight:700;text-align:center;padding:9px 8px;border-bottom:2px solid var(--line);white-space:nowrap}
   tbody td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
   tbody td.subj{text-align:left;font-weight:700;white-space:nowrap}
@@ -184,12 +185,12 @@
   .topics .t{background:var(--accent-soft);color:var(--accent);font-size:11.5px;padding:3px 9px;border-radius:7px;font-weight:600}
   .tip{background:var(--warn-soft);border-left:3px solid var(--warn);padding:8px 11px;border-radius:0 8px 8px 0;font-size:12.5px;color:#7c2d12;margin-top:8px}
   /* 記録・予実 */
-  .rec-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end;background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:14px}
+  .rec-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end;margin-bottom:14px}
   .rec-form .f{display:flex;flex-direction:column;gap:4px}
   .rec-form .f label{font-size:11px;color:var(--muted);font-weight:700}
   .rec-form .f.note{grid-column:1/-1}
   .rec-form .f.wide{grid-column:span 2}
-  .rec-form input,.rec-form select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;font-family:inherit;width:100%}
+  .rec-form input,.rec-form select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fff;font-family:inherit;width:100%}
   .rec-form input[type=number]{min-width:0}
   .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
   .kpi .b{border-radius:12px;padding:13px 14px;border:1px solid var(--line)}
@@ -360,8 +361,25 @@
     .stat .v{font-size:20px;}
     .daybreak{flex-wrap:wrap;gap:5px;}
     .chip{font-size:11px;padding:4px 8px;}
-    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}
-    table{min-width:360px;font-size:11px;}
+    /* テーブル共通 */
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{width:auto;font-size:11px;}
+    thead th,tbody td{padding:6px 5px;}
+    /* 時間配分テーブル：区分・出題形式・配点シェア・1日目安を非表示 */
+    #allocTable th:nth-child(2),#allocTable td:nth-child(2),
+    #allocTable th:nth-child(3),#allocTable td:nth-child(3),
+    #allocTable th:nth-child(5),#allocTable td:nth-child(5),
+    #allocTable th:nth-child(9),#allocTable td:nth-child(9){display:none;}
+    /* テキスト計画テーブル：ページ数・1回目・2回目・3回目を非表示 */
+    #estTable th:nth-child(3),#estTable td:nth-child(3),
+    #estTable th:nth-child(4),#estTable td:nth-child(4),
+    #estTable th:nth-child(5),#estTable td:nth-child(5),
+    #estTable th:nth-child(6),#estTable td:nth-child(6){display:none;}
+    /* 学習記録テーブル */
+    #recSubjTable th:nth-child(5),#recSubjTable td:nth-child(5){display:none;}
+    /* フォーム1列化 */
+    .rec-form{grid-template-columns:1fr 1fr;}
+    .rec-form input,.rec-form select{font-size:16px;}
     .est-controls{grid-template-columns:1fr 1fr;}
     .rec-form{grid-template-columns:1fr 1fr;gap:8px;}
     .rec-form .f.wide{grid-column:span 2;}
@@ -780,9 +798,9 @@
       </div>
 
       <!-- 演習記録フォーム -->
-      <div style="border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px">
-        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--ink)">演習結果を記録</div>
-        <div class="rec-form" style="gap:10px">
+      <div style="margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--ink);padding-bottom:8px;border-bottom:2px solid var(--line)">演習結果を記録</div>
+        <div class="rec-form" style="gap:10px;margin-top:10px">
           <div class="f"><label>実施日</label><input type="date" id="qDate"></div>
           <div class="f"><label>教材名</label><input type="text" id="qSource" placeholder="例：令和5年度本試験"></div>
           <div class="f"><label>科目</label><select id="qSubject"></select></div>

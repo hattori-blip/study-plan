@@ -46,10 +46,11 @@
     display:inline-flex;align-items:center;justify-content:center;flex:none;
   }
   .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .field-grid>div{min-width:0;overflow:hidden}
   label.fld{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;font-weight:600}
-  input[type=date],input[type=number],select{
+  input[type=date],input[type=time],input[type=number],input[type=text],input[type=tel],select{
     width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:15px;
-    background:#fff;color:var(--ink);font-family:inherit;
+    background:#fff;color:var(--ink);font-family:inherit;box-sizing:border-box;
   }
   input[type=range]{width:100%}
   input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.12);transition:border-color .15s,box-shadow .15s;}
@@ -187,11 +188,11 @@
   .tip{background:var(--warn-soft);border-left:3px solid var(--warn);padding:8px 11px;border-radius:0 8px 8px 0;font-size:12.5px;color:#7c2d12;margin-top:8px}
   /* 記録・予実 */
   .rec-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end;margin-bottom:14px}
-  .rec-form .f{display:flex;flex-direction:column;gap:4px}
+  .rec-form .f{display:flex;flex-direction:column;gap:4px;min-width:0;overflow:hidden}
   .rec-form .f label{font-size:11px;color:var(--muted);font-weight:700}
   .rec-form .f.note{grid-column:1/-1}
   .rec-form .f.wide{grid-column:span 2}
-  .rec-form input,.rec-form select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fff;font-family:inherit;width:100%}
+  .rec-form input,.rec-form select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fff;font-family:inherit;width:100%;min-width:0;box-sizing:border-box}
   .rec-form input[type=number]{min-width:0}
   .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
   .kpi .b{border-radius:12px;padding:13px 14px;border:1px solid var(--line)}

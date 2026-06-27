@@ -21,6 +21,7 @@
     font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.6; font-size:15px;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
   .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
   header.app{
@@ -39,9 +40,9 @@
   }
   .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
   .card h2{font-size:16px;margin:0 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .card h2 .num{
-    background:var(--accent);color:#fff;border-radius:7px;width:24px;height:24px;
-    display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none;
+  .card h2 .h2-icon{
+    background:var(--accent-soft);color:var(--accent);border-radius:9px;width:30px;height:30px;
+    display:inline-flex;align-items:center;justify-content:center;flex:none;
   }
   .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
   label.fld{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;font-weight:600}
@@ -184,12 +185,13 @@
   .topics .t{background:var(--accent-soft);color:var(--accent);font-size:11.5px;padding:3px 9px;border-radius:7px;font-weight:600}
   .tip{background:var(--warn-soft);border-left:3px solid var(--warn);padding:8px 11px;border-radius:0 8px 8px 0;font-size:12.5px;color:#7c2d12;margin-top:8px}
   /* 記録・予実 */
-  .rec-form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:12px 12px;margin-bottom:14px}
+  .rec-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end;background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:14px}
   .rec-form .f{display:flex;flex-direction:column;gap:4px}
   .rec-form .f label{font-size:11px;color:var(--muted);font-weight:700}
-  .rec-form .f.note{flex:1;min-width:130px}
-  .rec-form input,.rec-form select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;font-family:inherit}
-  .rec-form input[type=number]{width:90px}
+  .rec-form .f.note{grid-column:1/-1}
+  .rec-form .f.wide{grid-column:span 2}
+  .rec-form input,.rec-form select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;font-family:inherit;width:100%}
+  .rec-form input[type=number]{min-width:0}
   .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
   .kpi .b{border-radius:12px;padding:13px 14px;border:1px solid var(--line)}
   .kpi .b .k{font-size:12px;font-weight:700;color:var(--muted)}
@@ -283,13 +285,15 @@
   @keyframes tabFadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   .app-header{
     background:linear-gradient(135deg,#1b2a4a,#2c3e6b);
-    color:#fff;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;
+    color:#fff;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between;
     position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(27,42,74,.25);
+    width:100%;box-sizing:border-box;
   }
-  .app-header .logo{font-size:18px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:10px;}
+  .app-header .logo{font-size:16px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;}
+  .app-header .logo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .app-header .logo-icon{
-    background:var(--accent);border-radius:8px;width:32px;height:32px;
-    display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;
+    background:var(--accent);border-radius:8px;width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;font-size:15px;flex:none;
   }
   .main-tab-nav{
     background:#fff;border-bottom:1px solid var(--line);
@@ -317,7 +321,7 @@
   /* ── ハンバーガーメニュー ── */
   #burgerBtn{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:8px;border-radius:8px;flex:none;}
   #burgerBtn:hover{background:rgba(255,255,255,.15);}
-  #currentTabName{display:none;font-size:13px;font-weight:700;color:#fff;opacity:.9;}
+  #currentTabName{display:none;font-size:13px;font-weight:700;color:#fff;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
   .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;}
   .drawer-overlay.open{display:block;}
   #mobileDrawer{position:fixed;top:0;left:-280px;width:270px;height:100%;background:#fff;z-index:450;
@@ -341,10 +345,12 @@
     #currentTabName{display:block;}
     .main-tab-nav{display:none;}
     .app-header{height:52px;padding:0 12px;}
-    .app-header .logo span{font-size:13px;}
+    .app-header .logo span{display:none;}
     .app-header > div:last-child{gap:4px;}
-    .tips-btn{font-size:11px;padding:5px 8px;gap:3px;}
+    .tips-btn{font-size:11px;padding:5px 9px;gap:3px;white-space:nowrap;}
     .tips-btn span[id=favCount]{display:none;}
+    .app-header > div:first-child{min-width:0;flex:1;overflow:hidden;}
+    .app-header > div:last-child{flex:none;gap:4px;}
     .main-wrap{padding:12px 10px 60px;}
     .card{padding:14px 12px;}
     .card h2{font-size:14px;}
@@ -358,10 +364,9 @@
     .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
     table{min-width:460px;font-size:11.5px;}
     .est-controls{grid-template-columns:1fr 1fr;}
-    .rec-form{gap:8px;}
-    .rec-form .f{min-width:calc(50% - 8px);}
-    .rec-form .f.note{min-width:100%;}
-    .rec-form input[type=number]{width:70px;}
+    .rec-form{grid-template-columns:1fr 1fr;gap:8px;}
+    .rec-form .f.wide{grid-column:span 2;}
+    .rec-form input[type=number]{min-width:0;}
     .kpi{grid-template-columns:1fr 1fr;}
     .kpi .b .v{font-size:17px;}
     .cl-row{flex-wrap:wrap;gap:4px;}
@@ -379,18 +384,19 @@
     .chartbox{overflow-x:auto;}
   }
   @media(max-width:400px){
-    .app-header .logo span{display:none;}
     .field-grid{grid-template-columns:1fr;}
     .kpi{grid-template-columns:1fr 1fr;}
   }
-  .main-wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px;}
+  .main-wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px;width:100%;box-sizing:border-box;}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
 <!-- 固定ヘッダー -->
 <header class="app-header">
-  <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+  <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;overflow:hidden">
     <button id="burgerBtn" aria-label="メニュー">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
@@ -402,7 +408,7 @@
     </div>
     <span id="currentTabName">概要・設定</span>
   </div>
-  <div style="display:flex;gap:8px">
+  <div style="display:flex;gap:6px;flex:none">
     <button class="tips-btn" id="openFavBtn" style="background:rgba(255,255,255,.15)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       保存済み<span id="favCount" style="margin-left:3px;background:var(--accent);border-radius:10px;padding:1px 6px;font-size:11px">0</span>
@@ -452,7 +458,7 @@
 
     <!-- 1. 設定 -->
     <section class="card">
-      <h2><span class="num">1</span>学習計画の前提を設定</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/><circle cx="17" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg></span>学習計画の前提を設定</h2>
       <div class="field-grid">
         <div>
           <label class="fld">勉強開始日</label>
@@ -490,15 +496,44 @@
 
     <!-- 2. サマリー -->
     <section class="card">
-      <h2><span class="num">2</span>学習可能時間のサマリー</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></span>学習可能時間のサマリー</h2>
       <div class="stats" id="stats"></div>
       <div class="daybreak" id="daybreak"></div>
       <div class="note" id="periodNote"></div>
     </section>
 
+    <!-- クラウド同期設定 -->
+    <section class="card">
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>クラウド同期（PC・スマホ共有）</h2>
+      <p class="hint" style="margin-top:-6px">同期キーを設定すると、学習データをクラウドに保存してPCとスマホで共有できます。同じキーを複数の端末で使用してください。</p>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+        <div style="flex:1;min-width:200px">
+          <label class="fld">同期キー（自分で決めるパスワード）</label>
+          <input type="text" id="syncKeyInput" placeholder="例：hattori-study-2026" style="font-family:monospace;font-size:13px">
+          <div class="hint">他人に推測されにくい文字列を設定してください</div>
+        </div>
+        <button class="btn primary" id="syncSaveKey">キーを保存</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="syncUpBtn" style="flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+          今すぐクラウドに保存
+        </button>
+        <button class="btn ghost" id="syncDownBtn" style="flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="8 8 12 12 16 8"/><line x1="12" y1="12" x2="12" y2="3"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+          クラウドから読み込む
+        </button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span id="syncStatus" style="font-size:12px;font-weight:700;color:var(--muted)"></span>
+        <span id="syncLastTime" style="font-size:11px;color:var(--muted)"></span>
+      </div>
+      <div class="hint" style="margin-top:8px">データは変更後3秒で自動的にクラウドへ保存されます。</div>
+    </section>
+
     <!-- Gemini API設定 -->
     <section class="card">
-      <h2><span class="num">★</span>AI機能設定（Gemini APIキー）</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg></span>AI機能設定（Gemini APIキー）</h2>
       <p class="hint" style="margin-top:-6px">Google Gemini APIキーを設定すると、AI教師タブで答案用紙の写真から自動入力できるようになります。キーはこの端末のみに保存され、外部に送信されません（Googleのサーバーへの問い合わせを除く）。</p>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <input type="password" id="geminiKey" placeholder="AIzaSy..." style="flex:1;min-width:200px;font-family:monospace;font-size:13px">
@@ -520,7 +555,7 @@
 
     <!-- 3. 科目別時間配分 -->
     <section class="card">
-      <h2><span class="num">3</span>科目別の学習時間の割振り
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></span>科目別の学習時間の割振り
         <span class="badge-reform">令和6年度〜 新試験制度対応</span>
       </h2>
       <div class="toolbar">
@@ -562,7 +597,7 @@
 
     <!-- 4. 可視化 -->
     <section class="card">
-      <h2><span class="num">4</span>時間配分の可視化</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>時間配分の可視化</h2>
       <div class="viz">
         <div id="donut"></div>
         <div class="legend" id="legend"></div>
@@ -572,7 +607,7 @@
 
     <!-- 5. インプット / アウトプット配分 -->
     <section class="card">
-      <h2><span class="num">5</span>インプット / アウトプットの時間配分</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>インプット / アウトプットの時間配分</h2>
       <p class="hint" style="margin-top:-6px">総学習時間を「テキスト読み込み（インプット）」と「問題集演習（アウトプット）」に振り分けます。</p>
       <div class="splitbar" id="ioBar"></div>
       <div style="margin-top:14px">
@@ -604,7 +639,7 @@
 
     <!-- 6. テキスト3回転 目安時間 -->
     <section class="card">
-      <h2><span class="num">6</span>テキスト3回転の目安時間（項目数・ページ数から算出）</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>テキスト3回転の目安時間（項目数・ページ数から算出）</h2>
       <p class="hint" style="margin-top:-6px">基本テキスト「<span id="bookName"></span>」全 <b id="tbItems"></b> 項目・<b id="tbPages"></b> ページを基に、読むスピードから3回転の所要時間を計算します。</p>
       <div class="est-controls">
         <div>
@@ -644,7 +679,7 @@
 
     <!-- 7. チェックリスト -->
     <section class="card">
-      <h2><span class="num">7</span>テキストチェックリスト（1〜3回転）</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>テキストチェックリスト（1〜3回転）</h2>
       <div class="tabs" id="passTabs"></div>
       <div class="toolbar">
         <button class="btn sm" id="expandAll">すべて開く</button>
@@ -666,7 +701,7 @@
 
     <!-- 8. 学習記録（予実管理） -->
     <section class="card">
-      <h2><span class="num">8</span>学習記録（予実管理）</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>学習記録（予実管理）</h2>
       <p class="hint" style="margin-top:-6px">実際に勉強した時間を記録すると、計画（予定）に対する進み具合を自動で集計します。</p>
       <div class="rec-form">
         <div class="f"><label>日付</label><input type="date" id="recDate"></div>
@@ -715,7 +750,7 @@
     <div class="grid">
 
     <section class="card">
-      <h2><span class="num">9</span>科目別の出題傾向（直近の本試験分析）</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>科目別の出題傾向（直近の本試験分析）</h2>
       <div id="trends"></div>
       <div class="src" id="sources"></div>
     </section>
@@ -727,28 +762,21 @@
   <div class="tab-panel" id="tab7">
     <div class="grid">
     <section class="card">
-      <h2><span class="num" style="background:var(--accent)">AI</span>専属 行政書士AI教師</h2>
+      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20"/><path d="M12 8v4l3 3"/></svg></span>専属 行政書士AI教師</h2>
       <p class="hint" style="margin-top:-6px">演習結果を記録すると、あなたの得意・不得意を分析して今やるべき学習をアドバイスします。</p>
 
       <!-- 画像OCR -->
       <div id="ocrBox" style="border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px">
         <input type="file" id="ocrInput" accept="image/*" style="display:none">
-        <input type="file" id="ocrInputCamera" accept="image/*" capture="environment" style="display:none">
         <div style="text-align:center;margin-bottom:10px">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:4px">答案用紙・問題冊子を読み取る</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px">AIが科目・正解数を自動入力（Gemini APIキー必要）</div>
         </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px" onclick="document.getElementById('ocrInputCamera').click()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            カメラで撮影
-          </button>
-          <button class="btn primary" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px" onclick="document.getElementById('ocrInput').click()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            アルバムから選択
-          </button>
-        </div>
+        <button class="btn primary" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px" onclick="document.getElementById('ocrInput').click()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          画像を選択（カメラ・アルバム）
+        </button>
         <div id="ocrStatus" style="margin-top:8px;font-size:12px;font-weight:700;text-align:center"></div>
       </div>
 
@@ -850,6 +878,111 @@
 </div>
 
 <script>
+/* ============================================================
+   Firebase クラウド同期
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyA17T2uCcqH0pIiGS2liE_IHHfiPhYkkqQ",
+  authDomain: "study-plan-37bef.firebaseapp.com",
+  projectId: "study-plan-37bef",
+  storageBucket: "study-plan-37bef.firebasestorage.app",
+  messagingSenderId: "273035543276",
+  appId: "1:273035543276:web:70f4656255b787b7a4dbc9"
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+const LS_SYNC_KEY = 'gyoseishoshi_synckey_v1';
+
+function getSyncKey(){ return (localStorage.getItem(LS_SYNC_KEY)||'').trim(); }
+
+let _syncTimer = null;
+function scheduleSync(){
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(syncToCloud, 3000);
+}
+
+async function syncToCloud(){
+  const key = getSyncKey();
+  if(!key) return;
+  updateSyncStatus('☁️ 同期中…', false);
+  try {
+    await db.collection('studyplans').doc(key).set({
+      plan:     JSON.parse(localStorage.getItem('gyoseishoshi_plan_v2')||'{}'),
+      checks:   JSON.parse(localStorage.getItem('gyoseishoshi_checks_v1')||'{}'),
+      logs:     JSON.parse(localStorage.getItem('gyoseishoshi_logs_v1')||'[]'),
+      qLogs:    JSON.parse(localStorage.getItem('gyoseishoshi_quiz_v1')||'[]'),
+      favTips:  JSON.parse(localStorage.getItem('gyoseishoshi_favtips_v1')||'[]'),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    localStorage.setItem('gyoseishoshi_lastsync', new Date().toISOString());
+    updateSyncStatus('✅ 同期済み', true);
+  } catch(e) {
+    updateSyncStatus('❌ 同期失敗', false);
+    console.warn('syncToCloud error:', e);
+  }
+}
+
+async function syncFromCloud(){
+  const key = getSyncKey();
+  if(!key){ showAlert('同期キーを入力してください','warn'); return; }
+  updateSyncStatus('📥 読み込み中…', false);
+  try {
+    const snap = await db.collection('studyplans').doc(key).get();
+    if(!snap.exists){ showAlert('このキーのデータはまだクラウドにありません','warn'); updateSyncStatus('', false); return; }
+    const d = snap.data();
+    if(d.plan)    localStorage.setItem('gyoseishoshi_plan_v2', JSON.stringify(d.plan));
+    if(d.checks)  localStorage.setItem('gyoseishoshi_checks_v1', JSON.stringify(d.checks));
+    if(d.logs)    localStorage.setItem('gyoseishoshi_logs_v1', JSON.stringify(d.logs));
+    if(d.qLogs)   localStorage.setItem('gyoseishoshi_quiz_v1', JSON.stringify(d.qLogs));
+    if(d.favTips) localStorage.setItem('gyoseishoshi_favtips_v1', JSON.stringify(d.favTips));
+    load(); loadChecks(); loadLogs();
+    try{ const q=JSON.parse(localStorage.getItem('gyoseishoshi_quiz_v1')); if(Array.isArray(q)) qLogs=q; }catch(e){}
+    try{ const f=JSON.parse(localStorage.getItem('gyoseishoshi_favtips_v1')); if(Array.isArray(f)) favTips=f; }catch(e){}
+    render();
+    try{ updateFavBtn(); }catch(e){}
+    try{ renderQuizTab(); }catch(e){}
+    localStorage.setItem('gyoseishoshi_lastsync', new Date().toISOString());
+    updateSyncStatus('✅ 読み込み完了！', true);
+    showAlert('クラウドからデータを読み込みました','ok');
+  } catch(e) {
+    updateSyncStatus('❌ 読み込み失敗', false);
+    showAlert('読み込みに失敗しました: '+e.message,'warn');
+  }
+}
+
+function updateSyncStatus(msg, ok){
+  const el = document.getElementById('syncStatus');
+  if(el){ el.textContent = msg; el.style.color = ok ? 'var(--ok)' : 'var(--muted)'; }
+  const lastEl = document.getElementById('syncLastTime');
+  const last = localStorage.getItem('gyoseishoshi_lastsync');
+  if(lastEl && last) lastEl.textContent = '最終同期: '+new Date(last).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function initSyncUI(){
+  const keyInput = document.getElementById('syncKeyInput');
+  if(!keyInput) return;
+  const saved = getSyncKey();
+  if(saved) keyInput.value = saved;
+  updateSyncStatus('', false);
+  const last = localStorage.getItem('gyoseishoshi_lastsync');
+  if(last){
+    const lastEl = document.getElementById('syncLastTime');
+    if(lastEl) lastEl.textContent = '最終同期: '+new Date(last).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  document.getElementById('syncSaveKey').addEventListener('click', ()=>{
+    const v = keyInput.value.trim();
+    if(!v){ showAlert('同期キーを入力してください','warn'); return; }
+    localStorage.setItem(LS_SYNC_KEY, v);
+    showAlert('同期キーを保存しました','ok');
+    updateSyncStatus('', false);
+  });
+  document.getElementById('syncUpBtn').addEventListener('click', syncToCloud);
+  document.getElementById('syncDownBtn').addEventListener('click', ()=>{
+    if(confirm('クラウドのデータをこの端末に読み込みます。現在のデータは上書きされます。よろしいですか？')) syncFromCloud();
+  });
+  if(getSyncKey()) syncFromCloud();
+}
+
 /* ============================================================
    行政書士試験 マスター仕様（出題傾向リサーチに基づく / 令和6年度改正後・300点満点）
    ============================================================ */
@@ -1020,6 +1153,7 @@ function save(){
     ioInput:els.ioInput.value,minPerPage:els.minPerPage.value,k2:els.k2.value,k3:els.k3.value,
     allocation
   }));}catch(e){}
+  scheduleSync();
 }
 function load(){
   let data=null; try{data=JSON.parse(localStorage.getItem(LS_KEY));}catch(e){}
@@ -1031,9 +1165,9 @@ function load(){
   allocation=Object.assign(Object.assign({},recommendedTable()),d.allocation||{});
 }
 function loadChecks(){let c=null;try{c=JSON.parse(localStorage.getItem(LS_CHECK));}catch(e){} if(c&&c[1]){checks=c;}}
-function saveChecks(){try{localStorage.setItem(LS_CHECK,JSON.stringify(checks));}catch(e){}}
+function saveChecks(){try{localStorage.setItem(LS_CHECK,JSON.stringify(checks));}catch(e){} scheduleSync();}
 function loadLogs(){let l=null;try{l=JSON.parse(localStorage.getItem(LS_LOG));}catch(e){} if(Array.isArray(l))logs=l;}
-function saveLogs(){try{localStorage.setItem(LS_LOG,JSON.stringify(logs));}catch(e){}}
+function saveLogs(){try{localStorage.setItem(LS_LOG,JSON.stringify(logs));}catch(e){} scheduleSync();}
 
 /* ============================================================
    計算
@@ -1655,7 +1789,7 @@ const LS_FAV = 'gyoseishoshi_favtips_v1';
 let favTips = [];
 try { const f = JSON.parse(localStorage.getItem(LS_FAV)); if (Array.isArray(f)) favTips = f; } catch(e){}
 
-function saveFavs(){ localStorage.setItem(LS_FAV, JSON.stringify(favTips)); }
+function saveFavs(){ localStorage.setItem(LS_FAV, JSON.stringify(favTips)); scheduleSync(); }
 
 function updateFavBtn(){
   const btn = document.getElementById('favTipBtn');
@@ -1724,7 +1858,7 @@ setInterval(() => {
 const LS_QUIZ = 'gyoseishoshi_quiz_v1';
 let qLogs = [];
 try { const q = JSON.parse(localStorage.getItem(LS_QUIZ)); if (Array.isArray(q)) qLogs = q; } catch(e){}
-function saveQuiz(){ localStorage.setItem(LS_QUIZ, JSON.stringify(qLogs)); }
+function saveQuiz(){ localStorage.setItem(LS_QUIZ, JSON.stringify(qLogs)); scheduleSync(); }
 
 function initQuizForm(){
   const sel = document.getElementById('qSubject');
@@ -1931,6 +2065,7 @@ function initGeminiSettings(){
   });
 }
 initGeminiSettings();
+initSyncUI();
 try { initQuizForm(); } catch(e){ console.warn('initQuizForm:', e); }
 try { renderQuizTab(); } catch(e){ console.warn('renderQuizTab:', e); }
 
@@ -2028,13 +2163,11 @@ JSONフォーマット：{"source":"教材名","results":[{"subjectId":"科目ID
     if(file._inputEl) file._inputEl.value = '';
   }
 }
-['ocrInput','ocrInputCamera'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', function(){
-    if(!this.files[0]) return;
-    const f = this.files[0];
-    f._inputEl = this;
-    handleOcrFile(f);
-  });
+document.getElementById('ocrInput').addEventListener('change', function(){
+  if(!this.files[0]) return;
+  const f = this.files[0];
+  f._inputEl = this;
+  handleOcrFile(f);
 });
 
 /* ============================================================
@@ -2063,6 +2196,10 @@ JSONフォーマット：{"source":"教材名","results":[{"subjectId":"科目ID
       // デスクトップ用タブのactive更新
       document.querySelectorAll('#mainTabNav li').forEach(li=>{
         li.dataset.tab===target ? li.classList.add('active') : li.classList.remove('active');
+      });
+      // ドロワー自身のactive更新
+      drawer.querySelectorAll('[data-tab]').forEach(d=>{
+        d.dataset.tab===target ? d.classList.add('active') : d.classList.remove('active');
       });
       // 現在タブ名を更新
       document.getElementById('currentTabName').textContent = btn.querySelector('.dtab-label').textContent;

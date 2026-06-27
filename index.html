@@ -1936,7 +1936,6 @@ try { renderQuizTab(); } catch(e){ console.warn('renderQuizTab:', e); }
 
 /* 画像OCR */
 async function handleOcrFile(file){
-  const file = this.files[0];
   if(!file) return;
   const apiKey = localStorage.getItem(LS_GKEY);
   const statusEl = document.getElementById('ocrStatus');

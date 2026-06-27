@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行政書士試験 学習計画アプリ</title>
+<style>
+  :root{
+    --bg:#e8f0fa; --card:#ffffff; --ink:#1b2a4a; --muted:#6b7280; --line:#dde6f0;
+    --accent:#e91e8c; --accent2:#c9177a; --accent-soft:#fce4f1;
+    --warn:#b45309; --warn-soft:#fff7ed; --danger:#dc2626; --ok:#059669; --ok-soft:#ecfdf5;
+    --c-gyoseiho:#1d4ed8; --c-minpo:#0891b2; --c-kenpo:#7c3aed;
+    --c-shoho:#d97706; --c-kisohou:#64748b; --c-kiso:#059669;
+    --shadow:0 1px 4px rgba(27,42,74,.08),0 1px 2px rgba(27,42,74,.05);
+    --shadow-lg:0 10px 30px rgba(27,42,74,.13);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
+  header.app{
+    background:linear-gradient(135deg,#1b2a4a,#2c3e6b);
+    color:#fff;border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-lg);
+    margin-bottom:18px;
+  }
+  header.app h1{margin:0;font-size:22px;letter-spacing:.02em}
+  header.app p{margin:6px 0 0;opacity:.9;font-size:13px}
+  header.app .accent-dot{color:#e91e8c;}
+  .grid{display:grid;gap:16px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 18px;box-shadow:var(--shadow);
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+  .card h2{font-size:16px;margin:0 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 .num{
+    background:var(--accent);color:#fff;border-radius:7px;width:24px;height:24px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none;
+  }
+  .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  label.fld{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;font-weight:600}
+  input[type=date],input[type=number],select{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:15px;
+    background:#fff;color:var(--ink);font-family:inherit;
+  }
+  input[type=range]{width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,30,140,.12);transition:border-color .15s,box-shadow .15s;}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px}
+  .switch input{width:18px;height:18px}
+  .btn{
+    border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;
+    padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;
+    transition:all .18s ease;
+  }
+  .btn:hover{background:#f0f6ff;transform:translateY(-1px);box-shadow:0 3px 8px rgba(27,42,74,.10);}
+  .btn:active{transform:translateY(0);}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent2);box-shadow:0 4px 14px rgba(233,30,140,.35);}
+  .btn.ghost{background:transparent}
+  .btn.ghost:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+  .btn.sm{padding:4px 9px;font-size:11px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .stat{background:var(--accent-soft);border-radius:12px;padding:14px 14px}
+  .stat .k{font-size:12px;color:var(--accent);font-weight:700}
+  .stat .v{font-size:24px;font-weight:800;line-height:1.2;margin-top:2px}
+  .stat .v small{font-size:13px;font-weight:600;color:var(--muted)}
+  .stat .s{font-size:11px;color:var(--muted);margin-top:2px}
+  .daybreak{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .daybreak .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;transition:all .15s ease;}
+  .daybreak .chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+  .daybreak .chip b{font-size:14px}
+
+  .tbl-wrap{overflow-x:auto;margin:0 -4px}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+  thead th{background:#f8fafc;color:var(--muted);font-size:11px;font-weight:700;text-align:center;padding:9px 8px;border-bottom:2px solid var(--line);white-space:nowrap}
+  tbody td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+  tbody td.subj{text-align:left;font-weight:700;white-space:nowrap}
+  tbody tr{transition:background .12s;}
+  tbody tr:hover{background:var(--accent-soft);}
+  .swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:middle}
+  .tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .tag.最重要{background:#fee2e2;color:#b91c1c}
+  .tag.重要{background:#ffedd5;color:#c2410c}
+  .tag.標準{background:var(--accent-soft);color:var(--accent)}
+  .tag.低{background:#f1f5f9;color:#64748b}
+  .alloc-input{width:64px;text-align:center;padding:6px 4px;font-size:14px;font-weight:700}
+  .hours-cell{font-weight:800;font-size:15px}
+  .perday{font-size:11px;color:var(--muted)}
+  tfoot td{padding:10px 8px;font-weight:800;background:#f8fafc;border-top:2px solid var(--line)}
+  .total-ok{color:var(--ok)} .total-bad{color:var(--danger)}
+  .formcount{font-size:11px;color:var(--muted);white-space:nowrap}
+
+  .bars{margin-top:6px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+  .bar-row .lab{width:96px;font-size:12px;font-weight:700;text-align:right;flex:none}
+  .bar-track{flex:1;background:#f1f5f9;border-radius:999px;height:18px;overflow:hidden;position:relative}
+  .bar-fill{height:100%;border-radius:999px;transition:width .35s}
+  .bar-row .val{width:70px;font-size:12px;color:var(--muted);flex:none}
+
+  .viz{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:center}
+  @media(max-width:560px){.viz{grid-template-columns:1fr}}
+  .legend{display:grid;gap:6px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-size:13px}
+  .legend .li .nm{flex:1}
+  .legend .li .pc{font-weight:700;color:var(--muted)}
+
+  /* IO split */
+  .splitbar{display:flex;height:38px;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+  .splitbar .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;transition:width .3s}
+  .io-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0 6px}
+  @media(max-width:520px){.io-grid{grid-template-columns:1fr}}
+  .io-box{border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+  .io-box .t{font-size:12px;font-weight:700;color:var(--muted)}
+  .io-box .h{font-size:22px;font-weight:800}
+  .io-box .d{font-size:11px;color:var(--muted)}
+  .recon{border-radius:11px;padding:12px 14px;margin-top:12px;font-size:13px}
+  .recon.ok{background:var(--ok-soft);border:1px solid #a7f3d0}
+  .recon.bad{background:#fef2f2;border:1px solid #fecaca}
+  .recon b{font-size:15px}
+
+  /* estimate table */
+  .est-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:6px}
+
+  /* Checklist */
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{flex:1;min-width:96px;padding:10px 8px;border:1px solid var(--line);border-radius:11px;background:#fff;cursor:pointer;font-weight:800;font-size:14px;text-align:center;color:var(--muted)}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab .sub{display:block;font-size:11px;font-weight:600;opacity:.85;margin-top:3px}
+  .passhead{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border-radius:11px;padding:12px 14px;margin-bottom:12px;flex-wrap:wrap}
+  .passhead .big{font-size:20px;font-weight:800;color:var(--accent)}
+  .passhead .pbar{flex:1;min-width:140px;height:12px;background:#dbe4f5;border-radius:99px;overflow:hidden}
+  .passhead .pbar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+  .cl-sub{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+  .cl-sub>summary{padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;font-weight:700;list-style:none;background:#fbfcfe}
+  .cl-sub>summary::-webkit-details-marker{display:none}
+  .cl-sub>summary .arrow{color:var(--muted);transition:transform .2s}
+  .cl-sub[open]>summary .arrow{transform:rotate(90deg)}
+  .cl-prog{flex:1;height:9px;background:#eef2f7;border-radius:99px;overflow:hidden;max-width:150px}
+  .cl-prog>i{display:block;height:100%;background:var(--ok);transition:width .3s}
+  .cl-cnt{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+  .cl-body{padding:6px 13px 12px}
+  .cl-chap-t{font-size:12px;color:var(--muted);font-weight:700;margin:10px 0 2px;padding-bottom:3px;border-bottom:1px dashed var(--line)}
+  .cl-row{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #f4f6fb;font-size:13px;transition:background .12s;border-radius:6px;}
+  .cl-row:hover{background:var(--accent-soft);}
+  .cl-row label{display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0}
+  .cl-row input{width:18px;height:18px;flex:none;accent-color:var(--ok)}
+  .cl-row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cl-row.done .nm{color:var(--muted);text-decoration:line-through}
+  .cl-meta{font-size:11px;color:var(--muted);white-space:nowrap}
+  .cl-time{font-weight:700;color:var(--accent);font-size:12px;white-space:nowrap;min-width:54px;text-align:right}
+
+  tfoot td{}
+  .note{font-size:12px;color:var(--muted);background:#f8fafc;border:1px dashed var(--line);border-radius:10px;padding:11px 13px;margin-top:12px}
+  .note b{color:var(--ink)}
+  .src{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .src a{color:var(--accent)}
+  .badge-reform{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:700}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+  @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .alert{display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:9px 13px;border-radius:9px;font-size:13px;margin-bottom:12px}
+  .alert.show{display:block;animation:fadeInDown .2s ease;}
+  details.trend{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden;background:#fff;transition:box-shadow .18s ease,transform .18s ease;}
+  details.trend:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+  details.trend>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:700;flex-wrap:wrap}
+  details.trend>summary::-webkit-details-marker{display:none}
+  details.trend>summary .arrow{margin-left:auto;color:var(--muted);transition:transform .2s}
+  details.trend[open]>summary .arrow{transform:rotate(90deg)}
+  details.trend>summary .mini{font-size:11px;color:var(--muted);font-weight:600}
+  .trend-body{padding:0 14px 14px;font-size:13.5px}
+  .trend-body .lead{color:var(--ink);margin:4px 0 10px}
+  .topics{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .topics .t{background:var(--accent-soft);color:var(--accent);font-size:11.5px;padding:3px 9px;border-radius:7px;font-weight:600}
+  .tip{background:var(--warn-soft);border-left:3px solid var(--warn);padding:8px 11px;border-radius:0 8px 8px 0;font-size:12.5px;color:#7c2d12;margin-top:8px}
+  /* 記録・予実 */
+  .rec-form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:12px 12px;margin-bottom:14px}
+  .rec-form .f{display:flex;flex-direction:column;gap:4px}
+  .rec-form .f label{font-size:11px;color:var(--muted);font-weight:700}
+  .rec-form .f.note{flex:1;min-width:130px}
+  .rec-form input,.rec-form select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;font-family:inherit}
+  .rec-form input[type=number]{width:90px}
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
+  .kpi .b{border-radius:12px;padding:13px 14px;border:1px solid var(--line)}
+  .kpi .b .k{font-size:12px;font-weight:700;color:var(--muted)}
+  .kpi .b .v{font-size:23px;font-weight:800;line-height:1.2;margin-top:2px}
+  .kpi .b .v small{font-size:12px;font-weight:600;color:var(--muted)}
+  .kpi .b .s{font-size:11px;margin-top:2px;color:var(--muted)}
+  .kpi .b.good{background:var(--ok-soft);border-color:#a7f3d0}
+  .kpi .b.bad{background:#fef2f2;border-color:#fecaca}
+  .kpi .b.neutral{background:var(--accent-soft);border-color:rgba(233,30,140,.2)}
+  .chartbox{border:1px solid var(--line);border-radius:11px;padding:10px 8px 4px;margin-bottom:14px;overflow-x:auto}
+  .chart-legend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);margin-top:2px}
+  .chart-legend i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .rate-track{display:inline-block;width:70px;height:8px;background:#eef2f7;border-radius:99px;overflow:hidden;vertical-align:middle}
+  .rate-track>i{display:block;height:100%}
+  .logs-wrap{max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:11px}
+  .log-row{display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #f4f6fb;font-size:13px;transition:background .12s;}
+  .log-row:hover{background:var(--accent-soft);}
+  .log-row:last-child{border-bottom:none}
+  .log-row .ld{color:var(--muted);font-size:12px;white-space:nowrap;width:92px}
+  .log-row .ls{font-weight:700;min-width:74px}
+  .log-row .lh{font-weight:800;white-space:nowrap;width:52px;text-align:right}
+  .log-row .lnote{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .log-del{cursor:pointer;color:var(--danger);border:none;background:none;font-size:15px;padding:2px 6px;line-height:1}
+  .typebadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .typebadge.in{background:var(--accent-soft);color:var(--accent)}
+  .typebadge.out{background:var(--ok-soft);color:var(--ok)}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:22px}
+  @media print{.toolbar,.btn,.tabs,.rec-form,.log-del{display:none}body{background:#fff}}
+
+  /* ── Tips Button ── */
+  .tips-btn{
+    background:var(--accent);color:#fff;border:none;border-radius:20px;
+    padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:6px;transition:all .18s ease;
+  }
+  .tips-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(233,30,140,.4);}
+  .tips-btn svg{flex:none;}
+
+  /* ── Modal ── */
+  @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(27,42,74,.55);
+    backdrop-filter:blur(4px);z-index:500;
+    display:flex;align-items:center;justify-content:center;padding:16px;
+    opacity:0;pointer-events:none;transition:opacity .22s ease;
+  }
+  .modal-overlay.show{opacity:1;pointer-events:all;}
+  .modal{
+    background:#fff;border-radius:20px;padding:28px;
+    max-width:540px;width:100%;box-shadow:0 20px 60px rgba(27,42,74,.22);
+    animation:modalIn .25s ease;
+  }
+  .modal-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px;}
+  .modal-icon{
+    width:44px;height:44px;background:var(--accent-soft);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .modal-icon svg{color:var(--accent);}
+  .modal-titles{flex:1;}
+  .modal-cat{font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+  .modal-title{font-size:17px;font-weight:800;color:var(--ink);margin:0;line-height:1.3;}
+  .modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:2px 4px;transition:color .15s;margin-left:4px;}
+  .modal-close:hover{color:var(--ink);}
+  .modal-counter{font-size:11px;color:var(--muted);margin-bottom:12px;padding-left:58px;}
+  .modal-body{
+    font-size:13.5px;line-height:1.8;color:var(--ink);
+    background:var(--bg);border-radius:12px;padding:16px 18px;margin-bottom:18px;
+  }
+  .modal-body ul{margin:8px 0 0;padding-left:18px;}
+  .modal-body li{margin:5px 0;}
+  .modal-body strong{color:var(--ink);}
+  .modal-footer{display:flex;gap:8px;justify-content:flex-end;align-items:center;}
+  .modal-footer .modal-nav{display:flex;gap:6px;margin-right:auto;}
+
+  /* ── Tab Navigation ── */
+  @keyframes tabFadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .app-header{
+    background:linear-gradient(135deg,#1b2a4a,#2c3e6b);
+    color:#fff;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(27,42,74,.25);
+  }
+  .app-header .logo{font-size:18px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:10px;}
+  .app-header .logo-icon{
+    background:var(--accent);border-radius:8px;width:32px;height:32px;
+    display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;
+  }
+  .main-tab-nav{
+    background:#fff;border-bottom:1px solid var(--line);
+    position:sticky;top:60px;z-index:190;
+    box-shadow:0 1px 4px rgba(27,42,74,.06);
+  }
+  .main-tab-nav ul{
+    list-style:none;margin:0;padding:0 12px;display:flex;
+    max-width:1080px;margin:0 auto;overflow-x:auto;scrollbar-width:none;
+  }
+  .main-tab-nav ul::-webkit-scrollbar{display:none;}
+  .main-tab-nav li{
+    flex:none;padding:13px 16px 11px;font-size:13px;font-weight:700;color:var(--muted);
+    cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;
+    transition:color .15s,border-color .15s;user-select:none;
+    display:flex;align-items:center;gap:6px;
+  }
+  .main-tab-nav li:hover{color:var(--accent);}
+  .main-tab-nav li.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .main-tab-nav li svg{flex:none;opacity:.7;transition:opacity .15s;}
+  .main-tab-nav li:hover svg,.main-tab-nav li.active svg{opacity:1;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:tabFadeIn .25s ease;}
+  .main-wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px;}
+</style>
+</head>
+<body>
+
+<!-- 固定ヘッダー -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    </div>
+    <span>行政書士試験 学習計画</span>
+  </div>
+  <button class="tips-btn" id="openTipsBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    今日のTips
+  </button>
+</header>
+
+<!-- タブナビゲーション -->
+<nav class="main-tab-nav">
+  <ul id="mainTabNav">
+    <li class="active" data-tab="tab1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>概要・設定</li>
+    <li data-tab="tab2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg>時間配分</li>
+    <li data-tab="tab3"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>テキスト計画</li>
+    <li data-tab="tab4"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>チェックリスト</li>
+    <li data-tab="tab5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>学習記録</li>
+    <li data-tab="tab6"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>出題傾向</li>
+  </ul>
+</nav>
+
+<div class="main-wrap">
+  <div class="alert" id="alert"></div>
+
+  <!-- Tab 1: 概要・設定 (sections 1,2) -->
+  <div class="tab-panel active" id="tab1">
+    <div class="grid">
+
+    <!-- 1. 設定 -->
+    <section class="card">
+      <h2><span class="num">1</span>学習計画の前提を設定</h2>
+      <div class="field-grid">
+        <div>
+          <label class="fld">勉強開始日</label>
+          <input type="date" id="startDate">
+        </div>
+        <div>
+          <label class="fld">試験日</label>
+          <input type="date" id="examDate">
+          <div class="hint" id="examHint">例年11月第2日曜日・13:00〜16:00（令和8年度は2026年11月8日(日)予定）</div>
+        </div>
+        <div>
+          <label class="fld">平日の勉強時間（1日）</label>
+          <input type="number" id="weekdayHours" min="0" max="24" step="0.5" value="2">
+          <div class="hint">月〜金（祝日を除く）</div>
+        </div>
+        <div>
+          <label class="fld">休日の勉強時間（1日）</label>
+          <input type="number" id="weekendHours" min="0" max="24" step="0.5" value="6">
+          <div class="hint">土・日（＋祝日）</div>
+        </div>
+        <div>
+          <label class="fld">試験直前の予備日</label>
+          <input type="number" id="bufferDays" min="0" max="30" step="1" value="3">
+          <div class="hint">最終調整に充てる日数（計算から除外）</div>
+        </div>
+        <div>
+          <label class="fld">祝日の扱い</label>
+          <label class="switch" style="margin-top:8px">
+            <input type="checkbox" id="holidayAsWeekend" checked>
+            <span>祝日を休日時間として扱う</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. サマリー -->
+    <section class="card">
+      <h2><span class="num">2</span>学習可能時間のサマリー</h2>
+      <div class="stats" id="stats"></div>
+      <div class="daybreak" id="daybreak"></div>
+      <div class="note" id="periodNote"></div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab1 -->
+
+  <!-- Tab 2: 時間配分 (sections 3,4,5) -->
+  <div class="tab-panel" id="tab2">
+    <div class="grid">
+
+    <!-- 3. 科目別時間配分 -->
+    <section class="card">
+      <h2><span class="num">3</span>科目別の学習時間の割振り
+        <span class="badge-reform">令和6年度〜 新試験制度対応</span>
+      </h2>
+      <div class="toolbar">
+        <button class="btn primary" id="applyRecommended">推奨配分を適用</button>
+        <button class="btn" id="applyByPoints">配点シェアで配分</button>
+        <button class="btn ghost" id="normalize">合計を100%に補正</button>
+        <span style="flex:1"></span>
+        <button class="btn" onclick="window.print()">🖨 印刷 / PDF保存</button>
+      </div>
+      <div class="tbl-wrap">
+        <table id="allocTable">
+          <thead>
+            <tr>
+              <th style="text-align:left">科目</th>
+              <th>区分</th>
+              <th>出題形式<br>(択一/多肢/記述)</th>
+              <th>配点</th>
+              <th>配点<br>シェア</th>
+              <th>優先度</th>
+              <th>学習時間<br>配分(%)</th>
+              <th>割当時間</th>
+              <th>1日あたり<br>目安</th>
+            </tr>
+          </thead>
+          <tbody id="allocBody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:left">合計</td>
+              <td>300点</td><td>100%</td><td></td>
+              <td id="sumPct">100%</td><td id="sumHours">—</td><td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="note">
+        <b>按分の考え方：</b> 配点だけでなく「分量・難易度・コスパ」を加味。最重要の<b>行政法＋民法</b>で全体の約6割を確保し、商法・基礎法学は深入りせず、基礎知識は<b>文章理解</b>を得点源に効率配分するのが定石です。配分(%)欄は自由に編集できます（合計100%が目安）。
+      </div>
+    </section>
+
+    <!-- 4. 可視化 -->
+    <section class="card">
+      <h2><span class="num">4</span>時間配分の可視化</h2>
+      <div class="viz">
+        <div id="donut"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="bars" id="bars" style="margin-top:18px"></div>
+    </section>
+
+    <!-- 5. インプット / アウトプット配分 -->
+    <section class="card">
+      <h2><span class="num">5</span>インプット / アウトプットの時間配分</h2>
+      <p class="hint" style="margin-top:-6px">総学習時間を「テキスト読み込み（インプット）」と「問題集演習（アウトプット）」に振り分けます。</p>
+      <div class="splitbar" id="ioBar"></div>
+      <div style="margin-top:14px">
+        <label class="fld">インプット比率：<span id="ioInputLabel">45</span>% ／ アウトプット <span id="ioOutputLabel">55</span>%</label>
+        <input type="range" id="ioInput" min="10" max="90" step="5" value="45">
+        <div class="hint">スライダーでテキスト：問題集の比率を調整（残りが自動でアウトプットになります）</div>
+      </div>
+      <div class="io-grid">
+        <div class="io-box" style="border-color:#bfdbfe">
+          <div class="t" style="display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>インプット（テキスト3回転）</div>
+          <div class="h" id="ioInputHours" style="color:var(--accent)">—</div>
+          <div class="d" id="ioInputDay"></div>
+        </div>
+        <div class="io-box" style="border-color:#a7f3d0">
+          <div class="t" style="display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>アウトプット（問題集・過去問）</div>
+          <div class="h" id="ioOutputHours" style="color:var(--ok)">—</div>
+          <div class="d" id="ioOutputDay"></div>
+        </div>
+      </div>
+      <div class="note" id="phaseAdvice"></div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab2 -->
+
+  <!-- Tab 3: テキスト計画 (section 6) -->
+  <div class="tab-panel" id="tab3">
+    <div class="grid">
+
+    <!-- 6. テキスト3回転 目安時間 -->
+    <section class="card">
+      <h2><span class="num">6</span>テキスト3回転の目安時間（項目数・ページ数から算出）</h2>
+      <p class="hint" style="margin-top:-6px">基本テキスト「<span id="bookName"></span>」全 <b id="tbItems"></b> 項目・<b id="tbPages"></b> ページを基に、読むスピードから3回転の所要時間を計算します。</p>
+      <div class="est-controls">
+        <div>
+          <label class="fld">1回目の読む速度（分/ページ）</label>
+          <input type="number" id="minPerPage" min="0.5" max="30" step="0.5" value="4">
+          <div class="hint">じっくり理解しながら読む速度</div>
+        </div>
+        <div>
+          <label class="fld">2回目の速度（1回目比 %）</label>
+          <input type="number" id="k2" min="10" max="100" step="5" value="60">
+          <div class="hint">2周目は速く読める（例：60%）</div>
+        </div>
+        <div>
+          <label class="fld">3回目の速度（1回目比 %）</label>
+          <input type="number" id="k3" min="10" max="100" step="5" value="40">
+          <div class="hint">3周目はさらに速く（例：40%）</div>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:8px">
+        <table id="estTable">
+          <thead>
+            <tr><th style="text-align:left">科目</th><th>項目数</th><th>ページ数</th><th>1回目</th><th>2回目</th><th>3回目</th><th>3回転 計</th></tr>
+          </thead>
+          <tbody id="estBody"></tbody>
+          <tfoot><tr id="estFoot"></tr></tfoot>
+        </table>
+      </div>
+      <div class="recon" id="recon"></div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab3 -->
+
+  <!-- Tab 4: チェックリスト (section 7) -->
+  <div class="tab-panel" id="tab4">
+    <div class="grid">
+
+    <!-- 7. チェックリスト -->
+    <section class="card">
+      <h2><span class="num">7</span>テキストチェックリスト（1〜3回転）</h2>
+      <div class="tabs" id="passTabs"></div>
+      <div class="toolbar">
+        <button class="btn sm" id="expandAll">すべて開く</button>
+        <button class="btn sm" id="collapseAll">すべて閉じる</button>
+        <span style="flex:1"></span>
+        <button class="btn sm ghost" id="resetPass">この回をリセット</button>
+      </div>
+      <div class="passhead" id="passHead"></div>
+      <div id="checklist"></div>
+      <div class="note">チェック状態は自動保存されます。各項目の目安時間はセクション6の速度設定に連動します。</div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab4 -->
+
+  <!-- Tab 5: 学習記録 (section 8) -->
+  <div class="tab-panel" id="tab5">
+    <div class="grid">
+
+    <!-- 8. 学習記録（予実管理） -->
+    <section class="card">
+      <h2><span class="num">8</span>学習記録（予実管理）</h2>
+      <p class="hint" style="margin-top:-6px">実際に勉強した時間を記録すると、計画（予定）に対する進み具合を自動で集計します。</p>
+      <div class="rec-form">
+        <div class="f"><label>日付</label><input type="date" id="recDate"></div>
+        <div class="f"><label>科目</label><select id="recSubject"></select></div>
+        <div class="f"><label>種別</label><select id="recType"><option value="in">インプット</option><option value="out">アウトプット</option></select></div>
+        <div class="f"><label>時間（h）</label><input type="number" id="recHours" min="0" max="24" step="0.25" value="1"></div>
+        <div class="f note"><label>メモ（任意）</label><input type="text" id="recNote" placeholder="例：行政手続法 過去問 R5"></div>
+        <div class="f"><label>&nbsp;</label><button class="btn primary" id="recAdd">＋ 記録する</button></div>
+      </div>
+      <div class="kpi" id="recKpi"></div>
+      <div class="chartbox">
+        <div id="recChart"></div>
+        <div class="chart-legend">
+          <span><i style="background:#94a3b8"></i>予定（累計）</span>
+          <span><i style="background:var(--accent)"></i>実績（累計）</span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table id="recSubjTable">
+          <thead><tr><th style="text-align:left">科目</th><th>予定<br>(割当)</th><th>実績<br>(記録)</th><th>達成率</th><th>残り</th></tr></thead>
+          <tbody id="recSubjBody"></tbody>
+          <tfoot><tr id="recSubjFoot"></tr></tfoot>
+        </table>
+      </div>
+      <div class="note" id="recIONote"></div>
+      <div class="toolbar" style="margin:14px 0 6px">
+        <b style="font-size:13px">記録の履歴</b>
+        <span style="flex:1"></span>
+        <button class="btn sm ghost" id="recClear">全記録を削除</button>
+      </div>
+      <div class="logs-wrap" id="recList"></div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab5 -->
+
+  <!-- Tab 6: 出題傾向 (section 9) -->
+  <div class="tab-panel" id="tab6">
+    <div class="grid">
+
+    <section class="card">
+      <h2><span class="num">9</span>科目別の出題傾向（直近の本試験分析）</h2>
+      <div id="trends"></div>
+      <div class="src" id="sources"></div>
+    </section>
+
+    </div><!-- /grid -->
+  </div><!-- /tab6 -->
+
+</div><!-- /main-wrap -->
+
+<!-- Tips Modal -->
+<div class="modal-overlay" id="tipsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      </div>
+      <div class="modal-titles">
+        <div class="modal-cat" id="tipCat">効率学習法</div>
+        <h3 class="modal-title" id="tipTitle">—</h3>
+      </div>
+      <button class="modal-close" id="closeTipsBtn">✕</button>
+    </div>
+    <div class="modal-counter" id="tipCounter"></div>
+    <div class="modal-body" id="tipBody"></div>
+    <div class="modal-footer">
+      <div class="modal-nav">
+        <button class="btn sm ghost" id="prevTipBtn">← 前へ</button>
+        <button class="btn sm" id="nextTipBtn">次へ →</button>
+      </div>
+      <button class="btn primary sm" id="closeTipsBtn2">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   行政書士試験 マスター仕様（出題傾向リサーチに基づく / 令和6年度改正後・300点満点）
+   ============================================================ */
+const SPEC = {
+  examName:"行政書士試験", examDateRule:"例年11月第2日曜日",
+  examTime:"13:00〜16:00（3時間）・全60問", totalPoints:300,
+  reformNote:"令和6年度(2024年度)改正で、旧『一般知識等』が新『基礎知識』(①一般知識／②行政書士法等の業務関連諸法令〈戸籍法・住民基本台帳法等。新設〉／③情報通信・個人情報保護／④文章理解)へ再編。出題数14問・配点56点・基準点24点は変更なし。",
+  passCriteria:{horeiMin:122,kisoMin:24,totalMin:180,
+    note:"3要件を同時に満たすと合格（絶対基準）。①法令等122点以上/244点満点(50%) ②基礎知識24点以上/56点満点(6問以上) ③総得点180点以上/300点満点(60%)。基礎知識は6問未満だと他が満点でも不合格となる足切りがあり、文章理解3問の確実な得点が合否を左右する。"},
+  recommendedTotalHours:{beginner:900,experienced:600,
+    note:"初学者・独学は800〜1,000時間（中央値約900時間）、予備校・通信講座利用や法律学習経験者は500〜700時間（中央値約600時間）が定石レンジ。"},
+  subjects:[
+    {id:"kiso-hougaku",name:"基礎法学",category:"法令等",color:"var(--c-kisohou)",
+     choitaku:2,tashi:0,kijutsu:0,points:8,share:3,priority:"低",
+     trend:"5肢択一2問・8点のみで配点最小。法学一般・法令用語・司法運用・有名判例の判決文穴埋め等から幅広く出題され初見問題が多い。2問中1問は標準だがもう1問はトリッキーで、試験中トップクラスに点を取りにくい科目。",
+     topics:["法令用語・法の分類","法解釈の基礎","日本の司法制度・裁判運用","有名判例の判決文穴埋め","法思想・法の歴史"],
+     tip:"主要科目を終えた後に着手。深追いせず過去問＋模試・予想問題中心で『2問中1問正解』を目標とする、最も優先度の低い科目。"},
+    {id:"kenpo",name:"憲法",category:"法令等",color:"var(--c-kenpo)",
+     choitaku:5,tashi:1,kijutsu:0,points:28,share:9,priority:"重要",
+     trend:"5肢択一5問(20点)＋多肢選択式1問(8点)で計28点。人権は最高裁判例中心(違憲判決・判例変更が頻出)で論理の流れの理解が必要、統治は国会・内閣・裁判所の条文知識中心で衆議院の優越や解散関連の日数暗記が頻出。判例重視の傾向が顕著。",
+     topics:["人権の重要判例(違憲判決・判例変更)","統治機構(国会・内閣・裁判所)","衆議院の優越・解散から総選挙までの日数","違憲審査制","多肢選択式(判例・条文の穴埋め)"],
+     tip:"判例は事案・結論・論理の流れをセットで理解。択一5問中3〜4問＋多肢で稼ぐ得点源だが、満点は難しいため深追いはしない。"},
+    {id:"gyoseiho",name:"行政法",category:"法令等",color:"var(--c-gyoseiho)",
+     choitaku:19,tashi:2,kijutsu:1,points:112,share:37,priority:"最重要",
+     trend:"5肢択一19問(76点)＋多肢選択式2問(16点)＋記述式1問(20点)で計112点と全科目中最大配点(全体の約37%)。救済法系(手続法・不服審査法・事件訴訟法・国賠)は範囲が限定的で満点を狙う得点源、総論・地方自治法は範囲が広く5割確保が現実的。記述式は6割超が行政事件訴訟法から。合否を直接左右する最重要科目。",
+     topics:["行政手続法・行政不服審査法(条文素読で得点源)","行政事件訴訟法(処分性・原告適格・狭義の訴えの利益。記述頻出)","国家賠償法1条・2条の重要判例","地方自治法(住民監査請求・住民訴訟・公の施設)","行政法総論(行政行為・行政裁量・強制手段)"],
+     tip:"学習時間を最も厚く配分。条文型は条文素読、判例型は趣旨理解で対応し択一19問中15問以上が目標。記述はキーワード抽出・組み合わせ力を鍛える。"},
+    {id:"minpo",name:"民法",category:"法令等",color:"var(--c-minpo)",
+     choitaku:9,tashi:0,kijutsu:2,points:76,share:25,priority:"最重要",
+     trend:"5肢択一9問(36点)＋記述式2問(40点)で計76点と行政法に次ぐ重要科目。出題の約9割が財産法に集中し、標準は債権4・総則2・物権2・家族法1。最頻出は債権。記述40点は事例型で債権中心。2020年施行の改正債権法・相続法改正が反映され、過去問だけでは対応困難。",
+     topics:["債権(債務不履行・債権譲渡・連帯保証・売買・賃貸借・契約不適合責任・不法行為)","総則(制限行為能力者・意思表示・代理・時効)","物権(不動産物権変動177条・抵当権)","記述式(事例型・債権中心・キーワードで部分点)","改正論点(契約不適合責任・配偶者居住権・遺留分侵害額請求)"],
+     tip:"行政法に次ぐ時間を配分。記述2問40点があるため事例を『誰と誰が争うか』で把握し解決手段を導く訓練を重視。改正条文の正確な理解が必須。"},
+    {id:"shoho",name:"商法・会社法",category:"法令等",color:"var(--c-shoho)",
+     choitaku:5,tashi:0,kijutsu:0,points:20,share:7,priority:"標準",
+     trend:"5肢択一5問・20点。商法(総則・商行為)1問＋会社法4問の構成が定着。頻出は商行為・株式会社の設立・株式・株主総会/取締役会。条文数は膨大なのに配点は民法の約1/4で、試験中最もコストパフォーマンスが悪い科目。",
+     topics:["株式会社の設立(ほぼ毎年)","商行為(ほぼ毎年)","株式","株主総会・取締役会","商法総則"],
+     tip:"全範囲を捨てず頻出4分野(設立・商行為・株式・総会/取締役会)に絞り肢別過去問の反復で5問中2〜3問を狙う。深入りは禁物で学習は後回し。"},
+    {id:"kiso-chishiki",name:"基礎知識",category:"基礎知識",color:"var(--c-kiso)",
+     choitaku:14,tashi:0,kijutsu:0,points:56,share:19,priority:"重要",
+     trend:"5肢択一14問・56点。令和6年度改正で4分野に再編。想定内訳は一般知識5〜6問・情報通信個人情報保護3〜4問・文章理解3問・諸法令2問。24点(6問)以上の足切りがあり、知識不要で安定得点できる文章理解が最大の得点源かつ最優先分野。",
+     topics:["文章理解(脱文挿入・空欄補充・並べ替え。3問全取が目標)","情報通信・個人情報保護(個人情報保護法・情報公開法・公文書管理法)","諸法令(行政書士法・戸籍法・住民基本台帳法。新設・範囲限定)","一般知識(政治・経済・社会。深追い禁物で2問狙い)"],
+     tip:"足切り(6問)突破が最優先。優先度は文章理解＞情報通信・個人情報保護＞諸法令＞一般知識。文章理解3問＋情報通信/個人情報保護で6問確保を狙う。"}
+  ],
+  studyPhaseAdvice:"インプット期は 民法→行政法→憲法→基礎知識→基礎法学→商法 の順が定石。アウトプット（過去問）は直近10年分を3回が目安（行政法・文章理解は10年、他は5年）。直前期はアウトプット8〜9割へ切替え、本番形式の3時間通し演習を5回程度。基礎知識の足切り(6問)を確実にクリアできるよう最終調整。",
+  sources:[
+    "行政書士試験研究センター(公式・配点/合格基準) https://gyosei-shiken.or.jp/",
+    "伊藤塾(配点・科目別対策・改正解説) https://column.itojuku.co.jp/gyosei/",
+    "アガルート(試験科目・科目別分析・学習時間) https://www.agaroot.jp/gyosei/",
+    "TAC(試験日程・学習時間) https://www.tac-school.co.jp/kouza_gyosei/",
+    "フォーサイト/STUDYing/All About 他 各予備校の出題傾向分析"
+  ]
+};
+
+/* ============================================================
+   テキスト目次（PDF「2026年度版 合格革命 行政書士 基本テキスト」より抽出）
+   各 section = [節タイトル, PDF開始ページ, ページ数]
+   ============================================================ */
+const TEXTBOOK = {
+  book:"2026年度版 合格革命 行政書士 基本テキスト", totalPages:821, totalItems:107,
+  subjects:[
+   {id:"kenpo",name:"憲法",pages:117,items:15,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",35,4]]},
+    {t:"第１章 総論",s:[["第１節 憲法の意味",39,4],["第２節 天皇",43,4]]},
+    {t:"第２章 人権",s:[["第１節 人権総論",47,12],["第２節 幸福追求権・法の下の平等",59,13],["第３節 精神的自由権",72,20],["第４節 経済的自由権",92,6],["第５節 人身の自由",98,6],["第６節 社会権",104,7],["第７節 参政権・国務請求権",111,3]]},
+    {t:"第３章 統治",s:[["第１節 国会",114,10],["第２節 内閣",124,6],["第３節 裁判所",130,14],["第４節 財政",144,4],["第５節 地方自治・憲法改正",148,4]]},
+   ]},
+   {id:"gyoseiho",name:"行政法",pages:211,items:31,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",153,7]]},
+    {t:"第１章 行政法の一般的な法理論",s:[["第１節 行政法総論",160,7],["第２節 行政組織法",167,15],["第３節 行政作用の類型",182,25],["第４節 行政上の強制措置",207,6],["第５節 情報公開法・公文書管理法",213,6]]},
+    {t:"第２章 行政手続法",s:[["第１節 行政手続法総則",219,5],["第２節 申請に対する処分",224,6],["第３節 不利益処分",230,8],["第４節 行政指導",238,4],["第５節 届出",242,2],["第６節 命令等制定手続",244,3]]},
+    {t:"第３章 行政不服審査法",s:[["第１節 行政不服審査法総則",247,4],["第２節 審査請求",251,13],["第３節 審査請求以外の不服申立て",264,2],["第４節 教示",266,3]]},
+    {t:"第４章 行政事件訴訟法",s:[["第１節 行政事件訴訟の類型",269,3],["第２節 取消訴訟",272,20],["第３節 取消訴訟以外の抗告訴訟",292,9],["第４節 当事者訴訟",301,4],["第５節 民衆訴訟・機関訴訟",305,2],["第６節 教示",307,2]]},
+    {t:"第５章 国家賠償法・損失補償",s:[["第１節 国家賠償法",309,13],["第２節 損失補償",322,4]]},
+    {t:"第６章 地方自治法",s:[["第１節 地方公共団体の種類",326,4],["第２節 地方公共団体の事務",330,3],["第３節 地方公共団体の機関",333,12],["第４節 地方公共団体の立法",345,3],["第５節 地方公共団体の財務",348,5],["第６節 住民の権利",353,7],["第７節 関与",360,4]]},
+   ]},
+   {id:"minpo",name:"民法",pages:240,items:31,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",381,8]]},
+    {t:"第１章 総則",s:[["第１節 権利の主体・客体",389,12],["第２節 意思表示",401,9],["第３節 代理",410,11],["第４節 無効・取消し",421,3],["第５節 条件・期限",424,3],["第６節 時効",427,6]]},
+    {t:"第２章 物権",s:[["第１節 物権総論",433,18],["第２節 占有権",451,4],["第３節 所有権",455,8],["第４節 用益物権",463,3],["第５節 担保物権",466,23]]},
+    {t:"第３章 債権",s:[["第１節 債権の目的",489,5],["第２節 債務不履行",494,6],["第３節 責任財産の保全",500,8],["第４節 多数当事者の債権・債務",508,12],["第５節 債権譲渡・債務引受",520,6],["第６節 債権の消滅",526,8],["第７節 契約総論",534,8],["第８節 権利移転型契約",542,7],["第９節 貸借型契約",549,9],["第10節 役務提供型契約",558,8],["第11節 契約以外の債権発生原因",566,16]]},
+    {t:"第４章 親族",s:[["第１節 夫婦",582,5],["第２節 親子",587,9],["第３節 後見・扶養",596,3]]},
+    {t:"第５章 相続",s:[["第１節 相続人",599,5],["第２節 相続の効力",604,3],["第３節 相続の承認・放棄",607,3],["第４節 遺言・遺留分",610,7],["第５節 配偶者居住権・特別の寄与",617,4]]},
+   ]},
+   {id:"shoho",name:"商法・会社法",pages:97,items:10,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",635,4]]},
+    {t:"第１章 商法",s:[["第１節 商法総則",639,10],["第２節 商行為",649,15]]},
+    {t:"第２章 会社法",s:[["第１節 会社法総論",664,4],["第２節 設立",668,8],["第３節 株式",676,13],["第４節 機関",689,25],["第５節 計算",714,5],["第６節 持分会社",719,3],["第７節 組織再編",722,10]]},
+   ]},
+   {id:"kiso-hougaku",name:"基礎法学",pages:29,items:7,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",733,3]]},
+    {t:"第１章 法学概論",s:[["第１節 法とは何か",736,5],["第２節 法の効力",741,3],["第３節 法の解釈",744,2],["第４節 法律用語",746,4]]},
+    {t:"第２章 紛争解決制度",s:[["第１節 裁判制度",750,9],["第２節 裁判外紛争解決手続",759,3]]},
+   ]},
+   {id:"kiso-chishiki",name:"基礎知識",pages:127,items:13,chapters:[
+    {t:"科目別ガイダンス",s:[["科目別ガイダンス",763,6]]},
+    {t:"第１章 一般知識",s:[["第１節 政治",769,15],["第２節 経済",784,15],["第３節 社会",799,18]]},
+    {t:"第２章 業務関連諸法令",s:[["第１節 行政書士法",817,13],["第２節 戸籍法",830,6],["第３節 住民基本台帳法",836,6]]},
+    {t:"第３章 情報通信・個人情報保護",s:[["第１節 情報化社会",842,8],["第２節 情報通信用語",850,9],["第３節 個人情報保護法",859,16]]},
+    {t:"第４章 文章理解",s:[["第１節 内容把握問題",875,5],["第２節 空欄補充問題",880,5],["第３節 並べ替え問題",885,5]]},
+   ]},
+  ]
+};
+
+// 科目色マップ（SPECから）
+const SUBJ_COLOR = {}; SPEC.subjects.forEach(s=>SUBJ_COLOR[s.id]=s.color);
+
+// チェックリスト用フラット項目リスト
+const ITEMS=[];
+TEXTBOOK.subjects.forEach(sub=>{
+  sub.chapters.forEach((ch,ci)=>{
+    ch.s.forEach((sec,si)=>{
+      ITEMS.push({key:`${sub.id}-${ci}-${si}`, subId:sub.id, subName:sub.name,
+                  chap:ch.t, title:sec[0], start:sec[1], pages:sec[2]});
+    });
+  });
+});
+
+/* ============================================================
+   日本の祝日（2000-2099 概算アルゴリズム）
+   ============================================================ */
+function nthMonday(year,month,n){let d=new Date(year,month-1,1);let day=d.getDay();let fm=(day===1)?1:((8-day)%7)+1;return new Date(year,month-1,fm+(n-1)*7);}
+function vernalEquinox(y){return Math.floor(20.8431+0.242194*(y-1980)-Math.floor((y-1980)/4));}
+function autumnalEquinox(y){return Math.floor(23.2488+0.242194*(y-1980)-Math.floor((y-1980)/4));}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function buildHolidays(year){
+  const H={}; const add=(m,d,name)=>{H[ymd(new Date(year,m-1,d))]=name;};
+  add(1,1,"元日"); H[ymd(nthMonday(year,1,2))]="成人の日";
+  add(2,11,"建国記念の日"); add(2,23,"天皇誕生日"); add(3,vernalEquinox(year),"春分の日");
+  add(4,29,"昭和の日"); add(5,3,"憲法記念日"); add(5,4,"みどりの日"); add(5,5,"こどもの日");
+  H[ymd(nthMonday(year,7,3))]="海の日"; add(8,11,"山の日"); H[ymd(nthMonday(year,9,3))]="敬老の日";
+  add(9,autumnalEquinox(year),"秋分の日"); H[ymd(nthMonday(year,10,2))]="スポーツの日";
+  add(11,3,"文化の日"); add(11,23,"勤労感謝の日");
+  for(let m=1;m<=12;m++){for(let day=1;day<=31;day++){const cur=new Date(year,m-1,day);if(cur.getMonth()!==m-1)continue;const prev=new Date(year,m-1,day-1),next=new Date(year,m-1,day+1);if(H[ymd(prev)]&&H[ymd(next)]&&!H[ymd(cur)]&&cur.getDay()!==0){H[ymd(cur)]="国民の休日";}}}
+  for(const k of Object.keys(H)){const d=new Date(k+'T00:00:00');if(d.getDay()===0){let n=new Date(d);do{n.setDate(n.getDate()+1);}while(H[ymd(n)]);H[ymd(n)]="振替休日";}}
+  return H;
+}
+let HOLIDAY_CACHE={};
+function getHolidays(year){if(!HOLIDAY_CACHE[year])HOLIDAY_CACHE[year]=buildHolidays(year);return HOLIDAY_CACHE[year];}
+function holidayName(d){return getHolidays(d.getFullYear())[ymd(d)]||null;}
+function secondSundayOfNov(year){let d=new Date(year,10,1);let fs=(d.getDay()===0)?1:(8-d.getDay());return new Date(year,10,fs+7);}
+
+/* ============================================================
+   状態 & 永続化
+   ============================================================ */
+const LS_KEY="gyoseishoshi_plan_v2", LS_CHECK="gyoseishoshi_checks_v1", LS_LOG="gyoseishoshi_logs_v1";
+const els={};
+['startDate','examDate','weekdayHours','weekendHours','bufferDays','holidayAsWeekend',
+ 'ioInput','minPerPage','k2','k3'].forEach(id=>els[id]=document.getElementById(id));
+
+let allocation={};
+function recommendedTable(){ return {"gyoseiho":33,"minpo":30,"kenpo":12,"shoho":8,"kiso-hougaku":4,"kiso-chishiki":13}; }
+let checks={1:{},2:{},3:{}};
+let activePass=1;
+let logs=[];
+
+function defaults(){
+  const today=new Date();
+  const examYear=(today.getMonth()>10||(today.getMonth()===10&&today.getDate()>14))?today.getFullYear()+1:today.getFullYear();
+  return {startDate:ymd(today),examDate:ymd(secondSundayOfNov(examYear)),
+    weekdayHours:2,weekendHours:6,bufferDays:3,holidayAsWeekend:true,
+    ioInput:45,minPerPage:4,k2:60,k3:40,allocation:Object.assign({},recommendedTable())};
+}
+function save(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify({
+    startDate:els.startDate.value,examDate:els.examDate.value,
+    weekdayHours:els.weekdayHours.value,weekendHours:els.weekendHours.value,
+    bufferDays:els.bufferDays.value,holidayAsWeekend:els.holidayAsWeekend.checked,
+    ioInput:els.ioInput.value,minPerPage:els.minPerPage.value,k2:els.k2.value,k3:els.k3.value,
+    allocation
+  }));}catch(e){}
+}
+function load(){
+  let data=null; try{data=JSON.parse(localStorage.getItem(LS_KEY));}catch(e){}
+  const d=data||defaults();
+  els.startDate.value=d.startDate; els.examDate.value=d.examDate;
+  els.weekdayHours.value=d.weekdayHours; els.weekendHours.value=d.weekendHours;
+  els.bufferDays.value=d.bufferDays??3; els.holidayAsWeekend.checked=d.holidayAsWeekend!==false;
+  els.ioInput.value=d.ioInput??45; els.minPerPage.value=d.minPerPage??4; els.k2.value=d.k2??60; els.k3.value=d.k3??40;
+  allocation=Object.assign(Object.assign({},recommendedTable()),d.allocation||{});
+}
+function loadChecks(){let c=null;try{c=JSON.parse(localStorage.getItem(LS_CHECK));}catch(e){} if(c&&c[1]){checks=c;}}
+function saveChecks(){try{localStorage.setItem(LS_CHECK,JSON.stringify(checks));}catch(e){}}
+function loadLogs(){let l=null;try{l=JSON.parse(localStorage.getItem(LS_LOG));}catch(e){} if(Array.isArray(l))logs=l;}
+function saveLogs(){try{localStorage.setItem(LS_LOG,JSON.stringify(logs));}catch(e){}}
+
+/* ============================================================
+   計算
+   ============================================================ */
+function computeDays(){
+  const start=new Date(els.startDate.value+'T00:00:00');
+  const exam=new Date(els.examDate.value+'T00:00:00');
+  const buffer=Math.max(0,parseInt(els.bufferDays.value)||0);
+  const wH=parseFloat(els.weekdayHours.value)||0, eH=parseFloat(els.weekendHours.value)||0;
+  const holAsWk=els.holidayAsWeekend.checked;
+  const lastDay=new Date(exam); lastDay.setDate(lastDay.getDate()-1-buffer);
+  let weekday=0,weekend=0,holiday=0,total=0;
+  if(start<=lastDay){let cur=new Date(start);
+    while(cur<=lastDay){const dow=cur.getDay();const isHol=!!holidayName(cur);
+      if(isHol&&holAsWk)holiday++; else if(dow===0||dow===6)weekend++; else weekday++;
+      cur.setDate(cur.getDate()+1);total++; if(total>20000)break;}}
+  const weekendLike=weekend+holiday;
+  const totalHours=weekday*wH+weekendLike*eH;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const daysToExam=Math.max(0,Math.round((exam-today)/86400000));
+  const studyDays=weekday+weekendLike;
+  return {start,exam,lastDay,buffer,wH,eH,holAsWk,weekday,weekend,holiday,weekendLike,totalHours,daysToExam,studyDays};
+}
+function fmtH(h){if(!h||h<=0)return"0時間"; return (Math.round(h*10)/10).toLocaleString('ja-JP')+"時間";}
+function fmtHr(h){if(!h||h<=0)return"0h"; return (Math.round(h*10)/10)+"h";}
+function jp(d){return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${'日月火水木金土'[d.getDay()]})`;}
+
+// 速度設定
+function speed(){const mpp=parseFloat(els.minPerPage.value)||4; const k2=(parseFloat(els.k2.value)||60)/100; const k3=(parseFloat(els.k3.value)||40)/100; return {mpp,k2,k3,factor:[1,k2,k3]};}
+// パスpのページあたり所要分
+function minPerPageForPass(p){const s=speed();return s.mpp*s.factor[p-1];}
+// 項目のパスp目安(時間)
+function itemHours(pages,p){return pages*minPerPageForPass(p)/60;}
+
+/* ============================================================
+   レンダリング
+   ============================================================ */
+function render(){
+  const c=computeDays();
+  renderAlert(c); renderStats(c); renderAlloc(c); renderViz();
+  renderIO(c); renderEstimate(c); renderChecklist(c);
+  renderRecord(c); renderTrends(); renderSources(); save();
+}
+
+function renderAlert(c){
+  const a=document.getElementById('alert');
+  if(c.start>c.lastDay){a.textContent="⚠️ 開始日が試験日（予備日を除く）より後になっています。日付を確認してください。";a.classList.add('show');}
+  else a.classList.remove('show');
+}
+
+function renderStats(c){
+  const perDay=c.studyDays>0?c.totalHours/c.studyDays:0;
+  const stats=[
+    {k:"総学習可能時間",v:Math.round(c.totalHours).toLocaleString('ja-JP'),u:"時間",s:`${c.studyDays.toLocaleString('ja-JP')}日間で`},
+    {k:"試験までの残り",v:c.daysToExam.toLocaleString('ja-JP'),u:"日",s:`約${Math.round(c.daysToExam/7)}週間`},
+    {k:"1日あたり平均",v:perDay.toFixed(1),u:"時間",s:"学習日ベース"},
+    {k:"合格基準点",v:"180",u:"/300点",s:"法令122・基礎知識24も必須"},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="k">${s.k}</div><div class="v">${s.v}<small> ${s.u}</small></div><div class="s">${s.s}</div></div>`).join('');
+  const _ico=(path,col)=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;flex:none">${path}</svg>`;
+  const _icoWeekday=_ico('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>','#1d4ed8');
+  const _icoWeekend=_ico('<path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 2a10 10 0 0 0-10 10"/><path d="M2 12a10 10 0 0 0 10 10"/><path d="M22 12a10 10 0 0 1-10 10"/>','#0891b2');
+  const _icoHoliday=_ico('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>','#7c3aed');
+  const _icoBuf=_ico('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','#64748b');
+  document.getElementById('daybreak').innerHTML=
+    `<span class="chip">${_icoWeekday}平日 <b>${c.weekday}</b>日 × ${c.wH}h = <b>${Math.round(c.weekday*c.wH)}</b>h</span>`+
+    `<span class="chip">${_icoWeekend}土日 <b>${c.weekend}</b>日 × ${c.eH}h = <b>${Math.round(c.weekend*c.eH)}</b>h</span>`+
+    (c.holAsWk?`<span class="chip">${_icoHoliday}祝日 <b>${c.holiday}</b>日 × ${c.eH}h = <b>${Math.round(c.holiday*c.eH)}</b>h</span>`:'')+
+    `<span class="chip">${_icoBuf}予備日 <b>${c.buffer}</b>日</span>`;
+  document.getElementById('periodNote').innerHTML=
+    `<b>対象期間：</b>${jp(c.start)} 〜 ${jp(c.lastDay)}（試験日 ${jp(c.exam)} の前日まで、直前予備日 ${c.buffer} 日を除く）。祝日は${c.holAsWk?'休日時間で計算':'平日として計算'}。`+
+    `<br><b>試験当日：</b>${SPEC.examTime}（${SPEC.examDateRule}）。`;
+}
+
+function renderAlloc(c){
+  const body=document.getElementById('allocBody');
+  const totalAlloc=Object.values(allocation).reduce((a,b)=>a+(parseFloat(b)||0),0);
+  body.innerHTML=SPEC.subjects.map(s=>{
+    const pct=parseFloat(allocation[s.id])||0, hrs=c.totalHours*pct/100;
+    const perDay=c.studyDays>0?hrs/c.studyDays*60:0;
+    return `<tr>
+      <td class="subj"><span class="swatch" style="background:${s.color}"></span>${s.name}</td>
+      <td><span style="font-size:11px;color:var(--muted)">${s.category}</span></td>
+      <td><span class="formcount">${s.choitaku}/${s.tashi}/${s.kijutsu}</span></td>
+      <td>${s.points}点</td><td>${s.share}%</td>
+      <td><span class="tag ${s.priority}">${s.priority}</span></td>
+      <td><input type="number" class="alloc-input" data-id="${s.id}" min="0" max="100" step="1" value="${pct}"></td>
+      <td class="hours-cell" style="color:${s.color}">${fmtH(hrs)}</td>
+      <td class="perday">${perDay>=1?'約'+Math.round(perDay)+'分/日':'—'}</td>
+    </tr>`;}).join('');
+  body.querySelectorAll('.alloc-input').forEach(inp=>inp.addEventListener('input',()=>{
+    allocation[inp.dataset.id]=parseFloat(inp.value)||0;
+    const cc=computeDays(); renderAllocHoursOnly(cc); renderViz(); save();
+  }));
+  const sp=document.getElementById('sumPct'); sp.textContent=Math.round(totalAlloc)+'%';
+  sp.className=Math.abs(totalAlloc-100)<0.5?'total-ok':'total-bad';
+  document.getElementById('sumHours').textContent=fmtH(c.totalHours);
+}
+function renderAllocHoursOnly(c){
+  const rows=document.querySelectorAll('#allocBody tr');
+  SPEC.subjects.forEach((s,i)=>{const pct=parseFloat(allocation[s.id])||0,hrs=c.totalHours*pct/100;
+    const perDay=c.studyDays>0?hrs/c.studyDays*60:0;const tds=rows[i].querySelectorAll('td');
+    tds[7].textContent=fmtH(hrs); tds[8].textContent=perDay>=1?'約'+Math.round(perDay)+'分/日':'—';});
+  const totalAlloc=Object.values(allocation).reduce((a,b)=>a+(parseFloat(b)||0),0);
+  const sp=document.getElementById('sumPct'); sp.textContent=Math.round(totalAlloc)+'%';
+  sp.className=Math.abs(totalAlloc-100)<0.5?'total-ok':'total-bad';
+}
+
+function renderViz(){
+  const total=Object.values(allocation).reduce((a,b)=>a+(parseFloat(b)||0),0)||1;
+  const r=70,cx=90,cy=90,circ=2*Math.PI*r; let offset=0,segs='';
+  SPEC.subjects.forEach(s=>{const pct=(parseFloat(allocation[s.id])||0)/total;const len=pct*circ;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="26" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"></circle>`;offset+=len;});
+  document.getElementById('donut').innerHTML=`<svg viewBox="0 0 180 180" width="180" height="180">${segs}<text x="90" y="86" text-anchor="middle" font-size="13" fill="#6b7280">学習時間</text><text x="90" y="106" text-anchor="middle" font-size="16" font-weight="800" fill="#1f2937">配分</text></svg>`;
+  document.getElementById('legend').innerHTML=SPEC.subjects.map(s=>{const pct=parseFloat(allocation[s.id])||0;return `<div class="li"><span class="swatch" style="background:${s.color}"></span><span class="nm">${s.name}</span><span class="pc">${pct}%</span></div>`;}).join('');
+  document.getElementById('bars').innerHTML=`<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:4px">配点シェア（左）と学習時間配分（右）の比較</div>`+
+    SPEC.subjects.map(s=>{const pct=parseFloat(allocation[s.id])||0;return `<div class="bar-row"><span class="lab">${s.name}</span><div class="bar-track"><div class="bar-fill" style="width:${s.share*2}%;background:${s.color};opacity:.35"></div></div><span class="val">配点 ${s.share}%</span></div><div class="bar-row"><span class="lab"></span><div class="bar-track"><div class="bar-fill" style="width:${pct*2}%;background:${s.color}"></div></div><span class="val">時間 ${pct}%</span></div>`;}).join('');
+}
+
+// 5. インプット/アウトプット
+function renderIO(c){
+  let inp=parseFloat(els.ioInput.value)||45; const out=100-inp;
+  document.getElementById('ioInputLabel').textContent=inp;
+  document.getElementById('ioOutputLabel').textContent=out;
+  document.getElementById('ioBar').innerHTML=
+    `<div class="seg" style="width:${inp}%;background:var(--accent2)">📖 インプット ${inp}%</div>`+
+    `<div class="seg" style="width:${out}%;background:var(--ok)">✍️ アウトプット ${out}%</div>`;
+  const inH=c.totalHours*inp/100, outH=c.totalHours*out/100;
+  document.getElementById('ioInputHours').textContent=fmtH(inH);
+  document.getElementById('ioOutputHours').textContent=fmtH(outH);
+  document.getElementById('ioInputDay').textContent=c.studyDays>0?`1日あたり 約${(inH/c.studyDays*60).toFixed(0)}分 ／ テキスト3回転に充当`:'';
+  document.getElementById('ioOutputDay').textContent=c.studyDays>0?`1日あたり 約${(outH/c.studyDays*60).toFixed(0)}分 ／ 過去問・問題集に充当`:'';
+  document.getElementById('phaseAdvice').innerHTML=`<b>学習の進め方：</b>${SPEC.studyPhaseAdvice}`;
+}
+
+// 6. 目安時間算出
+function renderEstimate(c){
+  document.getElementById('bookName').textContent=TEXTBOOK.book;
+  document.getElementById('tbItems').textContent=TEXTBOOK.totalItems;
+  document.getElementById('tbPages').textContent=TEXTBOOK.totalPages;
+  const s=speed();
+  let rows='',T1=0,T2=0,T3=0,TI=0,TP=0;
+  TEXTBOOK.subjects.forEach(sub=>{
+    const h1=sub.pages*s.mpp/60, h2=sub.pages*s.mpp*s.k2/60, h3=sub.pages*s.mpp*s.k3/60;
+    T1+=h1;T2+=h2;T3+=h3;TI+=sub.items;TP+=sub.pages;
+    rows+=`<tr><td class="subj"><span class="swatch" style="background:${SUBJ_COLOR[sub.id]}"></span>${sub.name}</td>
+      <td>${sub.items}</td><td>${sub.pages}p</td>
+      <td>${fmtHr(h1)}</td><td>${fmtHr(h2)}</td><td>${fmtHr(h3)}</td>
+      <td class="hours-cell" style="color:${SUBJ_COLOR[sub.id]}">${fmtHr(h1+h2+h3)}</td></tr>`;
+  });
+  document.getElementById('estBody').innerHTML=rows;
+  const grand=T1+T2+T3;
+  document.getElementById('estFoot').innerHTML=
+    `<td style="text-align:left">合計</td><td>${TI}</td><td>${TP}p</td><td>${fmtHr(T1)}</td><td>${fmtHr(T2)}</td><td>${fmtHr(T3)}</td><td>${fmtHr(grand)}</td>`;
+  // 照合：割当インプット時間 vs 必要3回転時間
+  const inp=parseFloat(els.ioInput.value)||45;
+  const allocIn=c.totalHours*inp/100;
+  const diff=allocIn-grand;
+  const recon=document.getElementById('recon');
+  const perDayNeed=c.studyDays>0?grand/c.studyDays:0;
+  const pagesPerDay1=c.studyDays>0?TP/c.studyDays:0; // 1回目換算の必要ページ/日(3回転を均等配分した場合の目安)
+  if(diff>=0){
+    recon.className='recon ok';
+    recon.innerHTML=`✅ <b>インプット時間は足ります。</b> 割当インプット <b>${fmtH(allocIn)}</b> に対し、テキスト3回転の必要時間は <b>${fmtH(grand)}</b>（差 +${fmtH(diff)} の余裕）。`+
+      `<br>3回転を学習期間（${c.studyDays}日）で均すと、1日あたり約 <b>${(perDayNeed*60).toFixed(0)}分</b> のテキスト読み（目安ペース：1回目換算で約 <b>${pagesPerDay1.toFixed(1)}ページ/日</b>）。余裕分は問題集・苦手分野の上乗せに回せます。`;
+  }else{
+    recon.className='recon bad';
+    recon.innerHTML=`⚠️ <b>インプット時間が不足しています。</b> テキスト3回転に <b>${fmtH(grand)}</b> 必要ですが、割当インプットは <b>${fmtH(allocIn)}</b>（<b>${fmtH(-diff)}</b> 不足）。`+
+      `<br>対策：①インプット比率を上げる ②1ページあたりの分数を下げる（速読・重要度の低い項目は飛ばす）③学習時間そのものを増やす。現状ペースだと3回転完了に1日あたり約 <b>${(perDayNeed*60).toFixed(0)}分</b> 必要です。`;
+  }
+}
+
+// 7. チェックリスト
+let subOpen=null; // 科目の開閉状態を保持
+function renderChecklist(c){
+  if(subOpen===null){ // 初回：未完了科目を開く
+    subOpen={};
+    TEXTBOOK.subjects.forEach(sub=>{const si=ITEMS.filter(it=>it.subId===sub.id);
+      subOpen[sub.id]=si.filter(it=>checks[activePass][it.key]).length<si.length;});
+  }
+  renderPassTabs(c); renderPassHead();
+  const wrap=document.getElementById('checklist');
+  wrap.innerHTML=TEXTBOOK.subjects.map(buildSubjectBlock).join('');
+  bindChecklist(c);
+}
+function buildSubjectBlock(sub){
+  const subItems=ITEMS.filter(it=>it.subId===sub.id);
+  const done=subItems.filter(it=>checks[activePass][it.key]).length;
+  const pct=Math.round(done/subItems.length*100);
+  const subH=subItems.reduce((a,it)=>a+itemHours(it.pages,activePass),0);
+  let body='';
+  sub.chapters.forEach((ch,ci)=>{
+    body+=`<div class="cl-chap-t">${ch.t}</div>`;
+    ch.s.forEach((sec,si)=>{const key=`${sub.id}-${ci}-${si}`;const on=!!checks[activePass][key];const h=itemHours(sec[2],activePass);
+      body+=`<div class="cl-row ${on?'done':''}"><label><input type="checkbox" data-key="${key}" ${on?'checked':''}><span class="nm">${sec[0]}</span></label><span class="cl-meta">${sec[2]}p</span><span class="cl-time">${fmtHr(h)}</span></div>`;});
+  });
+  return `<details class="cl-sub" data-sub="${sub.id}" ${subOpen[sub.id]?'open':''}>
+    <summary><span class="swatch" style="background:${SUBJ_COLOR[sub.id]};width:12px;height:12px"></span><span>${sub.name}</span>
+      <span class="cl-prog"><i style="width:${pct}%"></i></span>
+      <span class="cl-cnt">${done}/${subItems.length}・${fmtHr(subH)}</span>
+      <button class="btn sm ghost subAll" data-sub="${sub.id}" title="この科目を全てチェック/解除">全${done===subItems.length?'解除':'✓'}</button>
+      <span class="arrow">▶</span></summary>
+    <div class="cl-body">${body}</div></details>`;
+}
+function bindChecklist(c){
+  const wrap=document.getElementById('checklist');
+  wrap.querySelectorAll('details.cl-sub').forEach(d=>d.addEventListener('toggle',()=>{subOpen[d.dataset.sub]=d.open;}));
+  wrap.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',()=>{
+    const key=cb.dataset.key;
+    if(cb.checked)checks[activePass][key]=1; else delete checks[activePass][key];
+    saveChecks();
+    cb.closest('.cl-row').classList.toggle('done',cb.checked); // 該当行だけ更新
+    const it=ITEMS.find(x=>x.key===key); if(it)updateSubjectSummary(it.subId);
+    renderPassHead(); renderPassTabs(c); // 進捗ヘッダ・タブのみ更新（リスト再構築なし）
+  }));
+  wrap.querySelectorAll('.subAll').forEach(b=>b.addEventListener('click',(e)=>{
+    e.preventDefault(); e.stopPropagation();
+    const sid=b.dataset.sub; const subItems=ITEMS.filter(it=>it.subId===sid);
+    const allOn=subItems.every(it=>checks[activePass][it.key]);
+    subItems.forEach(it=>{if(allOn)delete checks[activePass][it.key]; else checks[activePass][it.key]=1;});
+    saveChecks(); renderChecklist(c); // 多数変更のため全再描画（開閉状態は保持）
+  }));
+}
+function subjectStats(sid){
+  const subItems=ITEMS.filter(it=>it.subId===sid);
+  const done=subItems.filter(it=>checks[activePass][it.key]).length;
+  const subH=subItems.reduce((a,it)=>a+itemHours(it.pages,activePass),0);
+  return {total:subItems.length,done,pct:Math.round(done/subItems.length*100),subH};
+}
+function updateSubjectSummary(sid){
+  const det=document.querySelector(`#checklist details[data-sub="${sid}"]`); if(!det)return;
+  const s=subjectStats(sid);
+  det.querySelector('.cl-prog>i').style.width=s.pct+'%';
+  det.querySelector('.cl-cnt').textContent=`${s.done}/${s.total}・${fmtHr(s.subH)}`;
+  det.querySelector('.subAll').textContent='全'+(s.done===s.total?'解除':'✓');
+}
+function renderPassHead(){
+  const st=passStats(activePass);
+  const tot=ITEMS.reduce((a,it)=>a+itemHours(it.pages,activePass),0);
+  const dn=ITEMS.filter(it=>checks[activePass][it.key]).reduce((a,it)=>a+itemHours(it.pages,activePass),0);
+  document.getElementById('passHead').innerHTML=
+    `<div class="big">${activePass}回目</div>`+
+    `<div style="flex:1;min-width:160px"><div class="pbar"><i style="width:${st.pct}%"></i></div>`+
+    `<div style="font-size:12px;color:var(--muted);margin-top:5px">${st.done}/${ITEMS.length}項目 ・ ${st.pages}/${TEXTBOOK.totalPages}ページ ・ ${fmtHr(dn)}/${fmtHr(tot)}</div></div>`+
+    `<div style="font-size:13px;font-weight:700;color:var(--accent)">${st.pct}% 完了</div>`;
+}
+function renderPassTabs(c){
+  const tabsEl=document.getElementById('passTabs');
+  tabsEl.innerHTML=[1,2,3].map(p=>{const st=passStats(p);
+    return `<div class="tab ${p===activePass?'active':''}" data-pass="${p}">${p}回目<span class="sub">${st.done}/${ITEMS.length}項目 (${st.pct}%)</span></div>`;}).join('');
+  tabsEl.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{activePass=parseInt(t.dataset.pass);renderChecklist(c);}));
+}
+function passStats(p){
+  const done=ITEMS.filter(it=>checks[p][it.key]).length;
+  const pages=ITEMS.filter(it=>checks[p][it.key]).reduce((a,it)=>a+it.pages,0);
+  return {done,pages,pct:Math.round(done/ITEMS.length*100)};
+}
+
+/* ---- 8. 学習記録（予実） ---- */
+const SUBJ_NAME={}; SPEC.subjects.forEach(s=>SUBJ_NAME[s.id]=s.name);
+function initRecordForm(){
+  const sel=document.getElementById('recSubject');
+  sel.innerHTML=SPEC.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('recDate').value=ymd(new Date());
+  document.getElementById('recAdd').addEventListener('click',addLog);
+  document.getElementById('recClear').addEventListener('click',()=>{
+    if(logs.length&&confirm('すべての学習記録を削除しますか？この操作は取り消せません。')){logs=[];saveLogs();render();}
+  });
+}
+function addLog(){
+  const date=document.getElementById('recDate').value;
+  const subjectId=document.getElementById('recSubject').value;
+  const type=document.getElementById('recType').value;
+  const hours=parseFloat(document.getElementById('recHours').value)||0;
+  const note=document.getElementById('recNote').value.trim();
+  if(!date){alert('日付を入力してください。');return;}
+  if(hours<=0){alert('時間を入力してください。');return;}
+  logs.push({id:'l'+Date.now()+'-'+Math.floor(Math.random()*1000),date,subjectId,type,hours,note});
+  saveLogs();
+  document.getElementById('recNote').value='';
+  render();
+}
+function deleteLog(id){ logs=logs.filter(l=>l.id!==id); saveLogs(); render(); }
+function plannedHoursThrough(c,dateObj){
+  if(dateObj<c.start)return 0;
+  let sum=0,cur=new Date(c.start);
+  const end=new Date(Math.min(dateObj.getTime(),c.lastDay.getTime()));
+  let guard=0;
+  while(cur<=end&&guard++<20000){const dow=cur.getDay();const isHol=!!holidayName(cur);
+    sum+=(isHol&&c.holAsWk)?c.eH:((dow===0||dow===6)?c.eH:c.wH); cur.setDate(cur.getDate()+1);}
+  return sum;
+}
+function renderRecord(c){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const actualTotal=logs.reduce((a,l)=>a+(+l.hours||0),0);
+  const bySubj={},byType={in:0,out:0},byDate={};
+  logs.forEach(l=>{bySubj[l.subjectId]=(bySubj[l.subjectId]||0)+(+l.hours||0);
+    byType[l.type]=(byType[l.type]||0)+(+l.hours||0);
+    byDate[l.date]=(byDate[l.date]||0)+(+l.hours||0);});
+  const plannedToday=plannedHoursThrough(c,today);
+  const diff=actualTotal-plannedToday;
+  const prog=c.totalHours>0?actualTotal/c.totalHours*100:0;
+  // KPI
+  const diffCls=diff>=0?'good':'bad';
+  const diffTxt=diff>=0?`+${fmtHr(diff)} の貯金`:`${fmtHr(-diff)} の借金`;
+  const _kIco=(p,c2)=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c2}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px">${p}</svg>`;
+  document.getElementById('recKpi').innerHTML=
+    `<div class="b neutral"><div class="k">${_kIco('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>','var(--accent)')}本日までの予定</div><div class="v">${(Math.round(plannedToday*10)/10)}<small> 時間</small></div><div class="s">計画上の累計</div></div>`+
+    `<div class="b"><div class="k">${_kIco('<polyline points="20 6 9 17 4 12"/>','var(--ok)')}実績（累計）</div><div class="v" style="color:var(--accent)">${(Math.round(actualTotal*10)/10)}<small> 時間</small></div><div class="s">記録の合計</div></div>`+
+    `<div class="b ${diffCls}"><div class="k">${_kIco('<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','currentColor')}予実差（ペース）</div><div class="v">${diff>=0?'＋':'－'}${Math.abs(Math.round(diff*10)/10)}<small> 時間</small></div><div class="s">${diffTxt}</div></div>`+
+    `<div class="b"><div class="k">${_kIco('<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>','var(--accent)')}総進捗</div><div class="v">${prog.toFixed(1)}<small> %</small></div><div class="s">総予定 ${fmtHr(c.totalHours)} 中</div></div>`;
+  // チャート
+  document.getElementById('recChart').innerHTML=buildRecChart(c,byDate,today);
+  // 科目別予実
+  const totalAlloc=Object.values(allocation).reduce((a,b)=>a+(parseFloat(b)||0),0)||100;
+  let rows='',pPlan=0,pAct=0;
+  SPEC.subjects.forEach(s=>{
+    const plan=c.totalHours*(parseFloat(allocation[s.id])||0)/100;
+    const act=bySubj[s.id]||0; const rate=plan>0?act/plan*100:0;
+    const rem=Math.max(0,plan-act); pPlan+=plan;pAct+=act;
+    const col=rate>=100?'var(--ok)':(rate>=60?'var(--accent)':'var(--warn)');
+    rows+=`<tr><td class="subj"><span class="swatch" style="background:${s.color}"></span>${s.name}</td>
+      <td>${fmtHr(plan)}</td><td class="hours-cell" style="color:${s.color}">${fmtHr(act)}</td>
+      <td><span class="rate-track"><i style="width:${Math.min(100,rate)}%;background:${col}"></i></span> ${rate.toFixed(0)}%</td>
+      <td>${fmtHr(rem)}</td></tr>`;
+  });
+  document.getElementById('recSubjBody').innerHTML=rows;
+  const rateAll=pPlan>0?pAct/pPlan*100:0;
+  document.getElementById('recSubjFoot').innerHTML=
+    `<td style="text-align:left">合計</td><td>${fmtHr(pPlan)}</td><td>${fmtHr(pAct)}</td><td>${rateAll.toFixed(0)}%</td><td>${fmtHr(Math.max(0,pPlan-pAct))}</td>`;
+  // IO予実
+  const inp=parseFloat(els.ioInput.value)||45;
+  const planIn=c.totalHours*inp/100, planOut=c.totalHours*(100-inp)/100;
+  document.getElementById('recIONote').innerHTML=
+    `<b>インプット/アウトプット 予実：</b> 📖 インプット 予定 ${fmtHr(planIn)} → 実績 <b>${fmtHr(byType.in)}</b>（${planIn>0?(byType.in/planIn*100).toFixed(0):0}%） ／ ✍️ アウトプット 予定 ${fmtHr(planOut)} → 実績 <b>${fmtHr(byType.out)}</b>（${planOut>0?(byType.out/planOut*100).toFixed(0):0}%）`;
+  // 履歴
+  const list=document.getElementById('recList');
+  if(!logs.length){list.innerHTML=`<div class="empty">まだ記録がありません。上のフォームから今日の学習を記録しましょう。</div>`;}
+  else{
+    const sorted=[...logs].sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:(a.id<b.id?1:-1)));
+    list.innerHTML=sorted.map(l=>{
+      const d=new Date(l.date+'T00:00:00'); const dl=`${d.getMonth()+1}/${d.getDate()}(${'日月火水木金土'[d.getDay()]})`;
+      return `<div class="log-row"><span class="ld">${dl}</span>
+        <span class="ls">${SUBJ_NAME[l.subjectId]||l.subjectId}</span>
+        <span class="typebadge ${l.type}">${l.type==='in'?'IN':'OUT'}</span>
+        <span class="lh">${(+l.hours)}h</span>
+        <span class="lnote">${l.note?escapeHtml(l.note):''}</span>
+        <button class="log-del" data-id="${l.id}" title="削除">✕</button></div>`;
+    }).join('');
+    list.querySelectorAll('.log-del').forEach(b=>b.addEventListener('click',()=>deleteLog(b.dataset.id)));
+  }
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function buildRecChart(c,byDate,today){
+  const W=700,H=210,padL=42,padR=12,padT=12,padB=26,iw=W-padL-padR,ih=H-padT-padB;
+  let days=[],cur=new Date(c.start),guard=0;
+  while(cur<=c.lastDay&&guard++<20000){days.push(new Date(cur));cur.setDate(cur.getDate()+1);}
+  const n=days.length;
+  if(n<2)return `<div class="empty">期間が短すぎてグラフを表示できません。</div>`;
+  let pcum=0; const planned=days.map(d=>{const dow=d.getDay();const isHol=!!holidayName(d);pcum+=(isHol&&c.holAsWk)?c.eH:((dow===0||dow===6)?c.eH:c.wH);return pcum;});
+  const firstYmd=ymd(days[0]);
+  let acum=logs.reduce((a,l)=>a+(l.date<firstYmd?(+l.hours||0):0),0); // 開始日より前の記録も累計に含める
+  const actual=days.map(d=>{acum+=(byDate[ymd(d)]||0);return acum;});
+  const ymax=Math.max(c.totalHours,acum,1);
+  const X=i=>padL+i/(n-1)*iw, Y=v=>padT+ih-(v/ymax*ih);
+  const pPts=planned.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  let aPts=[],todayIdx=-1;
+  for(let i=0;i<n;i++){ if(days[i]>today){break;} aPts.push(`${X(i).toFixed(1)},${Y(actual[i]).toFixed(1)}`); todayIdx=i; }
+  const aLine=aPts.length>1?`<polyline points="${aPts.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`:'';
+  const aDot=todayIdx>=0?`<circle cx="${X(todayIdx).toFixed(1)}" cy="${Y(actual[todayIdx]).toFixed(1)}" r="3.5" fill="var(--accent)"/>`:'';
+  const tx=todayIdx>=0?X(todayIdx):null;
+  const todayLine=tx!==null?`<line x1="${tx.toFixed(1)}" y1="${padT}" x2="${tx.toFixed(1)}" y2="${padT+ih}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/><text x="${tx.toFixed(1)}" y="${padT-2}" font-size="9" fill="#94a3b8" text-anchor="middle">今日</text>`:'';
+  // y目盛
+  let yticks='';
+  for(let k=0;k<=4;k++){const v=ymax*k/4;const y=Y(v);yticks+=`<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="#f1f5f9"/><text x="${padL-5}" y="${(y+3).toFixed(1)}" font-size="9" fill="#94a3b8" text-anchor="end">${Math.round(v)}</text>`;}
+  const fd=days[0],ld=days[n-1];
+  const xlab=`<text x="${padL}" y="${H-8}" font-size="9" fill="#94a3b8">${fd.getMonth()+1}/${fd.getDate()}</text><text x="${W-padR}" y="${H-8}" font-size="9" fill="#94a3b8" text-anchor="end">${ld.getMonth()+1}/${ld.getDate()}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:560px">${yticks}${todayLine}<polyline points="${pPts}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>${aLine}${aDot}${xlab}</svg>`;
+}
+
+function renderTrends(){
+  document.getElementById('trends').innerHTML=SPEC.subjects.map(s=>{
+    const forms=[]; if(s.choitaku)forms.push(`択一${s.choitaku}問`); if(s.tashi)forms.push(`多肢選択${s.tashi}問`); if(s.kijutsu)forms.push(`記述${s.kijutsu}問`);
+    return `<details class="trend"><summary><span class="swatch" style="background:${s.color};width:12px;height:12px"></span>${s.name}<span class="tag ${s.priority}" style="margin-left:4px">${s.priority}</span><span class="mini">${s.points}点 ・ ${forms.join('＋')}</span><span class="arrow">▶</span></summary>
+      <div class="trend-body"><p class="lead">${s.trend}</p><div style="font-size:12px;color:var(--muted);font-weight:700">頻出・重要テーマ</div><div class="topics">${s.topics.map(t=>`<span class="t">${t}</span>`).join('')}</div><div class="tip">💡 ${s.tip}</div></div></details>`;
+  }).join('');
+}
+function renderSources(){
+  let html=`<b>令和6年度改正：</b>${SPEC.reformNote}<br><b>合格基準：</b>${SPEC.passCriteria.note}<br><b>総学習時間の目安：</b>${SPEC.recommendedTotalHours.note}`;
+  html+=`<br><b>テキスト：</b>${TEXTBOOK.book}（目次・ページ数は同書PDFより自動抽出。全${TEXTBOOK.totalItems}項目・本文計${TEXTBOOK.totalPages}ページ。ページ数はPDF上の値で、別冊六法・索引は除く）`;
+  if(SPEC.sources&&SPEC.sources.length){html+=`<br><b>参考：</b>`+SPEC.sources.map(s=>{const m=String(s).match(/https?:\/\/[^\s)]+/);return m?`<a href="${m[0]}" target="_blank" rel="noopener">${s}</a>`:s;}).join(' ／ ');}
+  document.getElementById('sources').innerHTML=html;
+}
+
+/* ============================================================
+   イベント
+   ============================================================ */
+document.getElementById('applyRecommended').addEventListener('click',()=>{allocation=Object.assign({},recommendedTable());syncAllocInputs();render();});
+document.getElementById('applyByPoints').addEventListener('click',()=>{SPEC.subjects.forEach(s=>allocation[s.id]=s.share);syncAllocInputs();render();});
+document.getElementById('normalize').addEventListener('click',()=>{const sum=Object.values(allocation).reduce((a,b)=>a+(parseFloat(b)||0),0);if(sum>0)Object.keys(allocation).forEach(k=>allocation[k]=Math.round(allocation[k]/sum*1000)/10);syncAllocInputs();render();});
+function syncAllocInputs(){document.querySelectorAll('.alloc-input').forEach(inp=>{inp.value=allocation[inp.dataset.id];});}
+
+document.getElementById('expandAll').addEventListener('click',()=>document.querySelectorAll('.cl-sub').forEach(d=>d.open=true));
+document.getElementById('collapseAll').addEventListener('click',()=>document.querySelectorAll('.cl-sub').forEach(d=>d.open=false));
+document.getElementById('resetPass').addEventListener('click',()=>{if(confirm(`${activePass}回目のチェックをすべて解除しますか？`)){checks[activePass]={};saveChecks();render();}});
+
+['startDate','examDate','weekdayHours','weekendHours','bufferDays','minPerPage','k2','k3'].forEach(id=>els[id].addEventListener('input',render));
+els.ioInput.addEventListener('input',()=>{const c=computeDays();renderIO(c);renderEstimate(c);save();});
+els.holidayAsWeekend.addEventListener('change',render);
+els.examDate.addEventListener('change',()=>{const ex=new Date(els.examDate.value+'T00:00:00');document.getElementById('examHint').textContent=`${ex.getFullYear()}年${ex.getMonth()+1}月${ex.getDate()}日(${'日月火水木金土'[ex.getDay()]})・13:00〜16:00 ｜ 行政書士試験は例年11月第2日曜日`;});
+
+/* ============================================================
+   タブナビゲーション（render()より前に登録して確実に動作させる）
+   ============================================================ */
+(function(){
+  const nav = document.getElementById('mainTabNav');
+  if (!nav) return;
+  nav.addEventListener('click', function(e) {
+    const li = e.target.closest('li[data-tab]');
+    if (!li) return;
+    const target = li.dataset.tab;
+    nav.querySelectorAll('li').forEach(n => n.classList.remove('active'));
+    li.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.id === target ? p.classList.add('active') : p.classList.remove('active');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+/* 初期化 */
+load(); loadChecks(); loadLogs(); initRecordForm(); render();
+
+/* ============================================================
+   Tips モーダル
+   ============================================================ */
+const TIPS = [
+  // ── 効率学習法 ──
+  {cat:"効率学習法", title:"行政法を最優先に学習する",
+   body:`行政法は全300点中112点（約37%）と圧倒的な比重を持ちます。<ul><li>行政手続法・行政不服審査法は条文素読だけで高得点が狙える</li><li>行政事件訴訟法の記述式は毎年ほぼ必出</li><li>民法より先に着手するのが合格者の定石</li></ul>`},
+  {cat:"効率学習法", title:"過去問は「3周」が基本",
+   body:`1周目は理解・解説精読、2周目は定着確認、3周目は高速で弱点洗い出し。<ul><li>行政法・文章理解は直近10年分</li><li>その他科目は直近5年分が目安</li><li>3周目は1問30秒以内で解けることを目標に</li></ul>`},
+  {cat:"効率学習法", title:"テキストより先に過去問を眺める",
+   body:`学習開始前に過去問をざっと眺めると「何が問われるか」が先にわかり、テキストを目的意識を持って読めます。<ul><li>出題頻度の低い箇所は読み飛ばす判断ができる</li><li>記述式の形式を早めに把握しておく</li></ul>`},
+  {cat:"効率学習法", title:"暗記は「間隔反復」で定着させる",
+   body:`エビングハウスの忘却曲線に従い、復習タイミングを分散させると記憶効率が大幅に上がります。<ul><li>翌日・3日後・1週間後・1ヶ月後に復習</li><li>このアプリのチェックリスト3回転はまさにこの原則に沿っている</li></ul>`},
+  {cat:"効率学習法", title:"行政法の条文を印刷して持ち歩く",
+   body:`行政手続法・行政不服審査法はそれぞれ約40〜60条程度。印刷してすき間時間に眺めるだけで条文知識が定着します。<ul><li>e-Govで最新条文を無料取得できる</li><li>移動中・食事中などの「ながら学習」に最適</li></ul>`},
+  {cat:"効率学習法", title:"商法は頻出4分野だけに絞る",
+   body:`商法・会社法は配点20点に対して条文数が膨大で、コスパが最も悪い科目です。<ul><li>株式会社の設立・商行為・株式・株主総会/取締役会の4分野に集中</li><li>肢別過去問の反復で5問中2〜3問を狙う</li><li>深入りは絶対禁物</li></ul>`},
+  {cat:"効率学習法", title:"模試は「本番演習」として使う",
+   body:`模試の目的は点数確認ではなく、3時間の時間配分を体に染み込ませることです。<ul><li>直前期は月1回以上、本番形式の通し演習を</li><li>時間が余った・足りなかった科目を記録する</li><li>解き順（基礎知識を最後にするなど）を固める</li></ul>`},
+  {cat:"効率学習法", title:"憲法判例は「結論」から先に覚える",
+   body:`違憲か合憲か、結論を先に頭に入れてから理由を学ぶと定着が早まります。<ul><li>違憲判決は約30件。まずこれを完璧に</li><li>判例の「事案→争点→判旨」の流れをセットで</li><li>多肢選択式は判例の空欄補充が中心</li></ul>`},
+
+  // ── 隙間時間の勉強法 ──
+  {cat:"隙間時間の勉強法", title:"通勤・通学時間はイヤホン学習に変える",
+   body:`耳からの繰り返しインプットは記憶定着に非常に効果的です。<ul><li>YouTubeの行政書士講義・判例解説を聞き流す</li><li>「行政書士 講義」で検索すると無料動画が多数ある</li><li>1日30分の通勤で年間180時間確保できる</li></ul>`},
+  {cat:"隙間時間の勉強法", title:"待ち時間はe-Gov条文アプリ",
+   body:`スマホのe-Govアプリで本物の条文を確認する習慣を。解説書より条文原文が正確で試験に直結します。<ul><li>行政手続法・行政不服審査法は条文が短くすき間向き</li><li>気になった条文をその場で確認する癖をつける</li></ul>`},
+  {cat:"隙間時間の勉強法", title:"寝る前5分の復習が最も効率的",
+   body:`睡眠中に記憶が整理・強化される性質を利用します。寝る直前に見たものは特に定着しやすいことが研究で示されています。<ul><li>その日に間違えた問題を寝る前に1回だけ見直す</li><li>5分以上やる必要はない。「見る」だけでOK</li></ul>`},
+  {cat:"隙間時間の勉強法", title:"昼休みの15分で過去問10問",
+   body:`1問1分30秒ペースで10問を解くリズムを作ると、本番の時間感覚も自然に身につきます。<ul><li>TAC・アガルートのスマホアプリを活用</li><li>解説まで読めなくても○×だけ確認してOK</li><li>積み重ねると週50問・月200問になる</li></ul>`},
+  {cat:"隙間時間の勉強法", title:"散歩しながら条文を声に出す",
+   body:`体を動かしながらの学習は記憶定着率が向上することが研究で示されています。<ul><li>行政手続法の定義条文（1条・2条）を暗唱する</li><li>散歩コースを「行手法ルート」「不服審査法ルート」と決める</li></ul>`},
+
+  // ── AI活用法 ──
+  {cat:"AI活用法", title:"AIで判例を瞬時に整理する",
+   body:`ChatGPT・Claude等のAIに判例を整理してもらう使い方が非常に効率的です。<ul><li>「○○判決について事案・争点・判旨・射程を箇条書きで教えて」</li><li>「この判例と△△判決の違いを比較表で見せて」</li><li>回答は必ず条文・判例集で裏取りすること</li></ul>`},
+  {cat:"AI活用法", title:"AIに問題を無限に作ってもらう",
+   body:`市販の問題集を解き終わっても、AIに問題を作成してもらえば演習量を無限に増やせます。<ul><li>「行政処分性に関する5肢択一問題を3問作成して」</li><li>「民法の代理に関する記述式問題を作って、模範解答も示して」</li><li>難易度（易・標準・難）も指定できる</li></ul>`},
+  {cat:"AI活用法", title:"わからない条文はAIに説明してもらう",
+   body:`難解な条文や法律用語をAIに平易な言葉で説明してもらうことで、理解が一気に深まります。<ul><li>「民法177条を具体例を使って中学生にわかるように説明して」</li><li>「行政裁量と司法審査の関係を図解してASCIIアートで表現して」</li></ul>`},
+  {cat:"AI活用法", title:"AIに記述式答案を採点してもらう",
+   body:`自分が書いた記述式の答案をAIに貼り付けて採点・フィードバックをもらえます。<ul><li>「この答案に行政事件訴訟法の観点から採点してください」</li><li>「キーワードが揃っているか確認して、足りない要素を教えて」</li><li>AIの採点はあくまで参考。本試験の基準と異なる場合がある</li></ul>`},
+  {cat:"AI活用法", title:"AIとソクラテス式問答で理解を深める",
+   body:`AIに「先生役」になってもらい、質問で理解を確認させる使い方が効果的です。<ul><li>「行政行為の取消しと撤回の違いについて、私に質問して理解度を確認して」</li><li>「民法の錯誤について理解できているか確認する問答をして」</li></ul>`},
+  {cat:"AI活用法", title:"AIでオリジナル比較表・まとめを作る",
+   body:`複数の似た概念を整理する比較表をAIに作ってもらうと学習効率が上がります。<ul><li>「申請に対する処分と不利益処分の違いを表でまとめて」</li><li>「審査請求・異議申立て・再審査請求の比較表を作って」</li><li>「行政代執行・直接強制・強制徴収・即時強制の違いを整理して」</li></ul>`},
+  {cat:"AI活用法", title:"AI活用の注意点：裏取りを忘れずに",
+   body:`AIは非常に便利ですが、法律の世界では事実確認が必須です。<ul><li>AIの回答は必ず条文・判例集・基本テキストで裏取りする</li><li>法改正に追いついていないことがある（学習データに期限がある）</li><li>AIを「理解の補助」に使い、「暗記ソース」にしない</li></ul>`},
+
+  // ── 科目別攻略 ──
+  {cat:"科目別攻略", title:"【行政法】条文素読の威力",
+   body:`行政手続法・行政不服審査法・行政事件訴訟法の3法を素読するだけで択一の6割近くが解けるようになります。<ul><li>行政手続法は1条から55条まで通読を2周</li><li>数字（期間・日数）に蛍光ペンでマーク</li><li>「処分」の定義（2条2号）は完璧に覚える</li></ul>`},
+  {cat:"科目別攻略", title:"【民法】債権を最優先に学ぶ",
+   body:`民法の出題の約半数が債権分野です。まず債権を固めてから総則・物権に進むのが効率的です。<ul><li>債務不履行・担保・売買・賃貸借・不法行為が最頻出</li><li>記述式2問（40点）は事例型で債権中心</li><li>「誰と誰が何をめぐって争うか」を図で整理する習慣を</li></ul>`},
+  {cat:"科目別攻略", title:"【憲法】違憲判決30件を制す",
+   body:`違憲判決は約30件。これを完璧に覚えるだけで択一5問中3〜4問は安定して取れます。<ul><li>薬事法距離制限・森林法共有分割制限・郵便法免責規定などが頻出</li><li>「違憲の理由」がよく問われる。理由まで覚える</li><li>多肢選択式は判例・条文の穴埋め形式が中心</li></ul>`},
+  {cat:"科目別攻略", title:"【基礎知識】文章理解は絶対に捨てない",
+   body:`文章理解3問は知識不要で安定して全問正解できる、最重要の得点源です。<ul><li>センター試験の現代文と同じ解法で解ける</li><li>「脱文挿入」は接続詞と指示語に注目</li><li>3問全取りを目指すことで足切りラインが安定する</li></ul>`},
+  {cat:"科目別攻略", title:"【地方自治法】住民訴訟の4類型を整理",
+   body:`地方自治法は範囲が広く得点しにくいですが、住民訴訟は毎年ほぼ必出です。<ul><li>1号：差止請求 / 2号：取消・無効確認 / 3号：怠る事実の違法確認 / 4号：損害賠償・不当利得返還</li><li>4号訴訟は令和2年改正で長の損害賠償請求廃止→監査委員制度に変更</li></ul>`},
+  {cat:"科目別攻略", title:"【国家賠償法】1条と2条の違いを明確に",
+   body:`国家賠償法は毎年1〜2問出題される得点しやすい分野です。<ul><li>1条：公務員の違法な公権力行使による損害賠償</li><li>2条：営造物の設置・管理の瑕疵による損害賠償</li><li>1条の「故意・過失」vs 2条の「無過失責任（瑕疵）」の違いが頻出</li></ul>`},
+  {cat:"科目別攻略", title:"【記述式】キーワード3点セットを意識する",
+   body:`記述式は完璧な文章より「キーワードが入っているか」で採点されます。<ul><li>行政法：「処分性・原告適格・訴えの利益」</li><li>民法：「債務不履行・損害賠償・解除」</li><li>各キーワードが何点か意識しながら答案を書く練習を</li></ul>`},
+
+  // ── 記憶術 ──
+  {cat:"記憶術", title:"アウトプット前提のインプットで効率2倍",
+   body:`「読んだ後に誰かに説明する」という意識で読むと、理解と記憶が格段に深まります。<ul><li>実際に声に出して説明してみる（ラバーダック学習法）</li><li>SNSやブログに学んだことを投稿するのも効果的</li><li>「教えることで最も学べる」という教育心理学の原則</li></ul>`},
+  {cat:"記憶術", title:"マインドマップで法律の体系を掴む",
+   body:`法律は木構造になっています。枝葉を覚える前に幹（体系）を把握すると、知識が有機的に繋がります。<ul><li>行政法なら「行政作用法→行政救済法→行政組織法」の3本柱</li><li>手書きで一枚の紙にまとめると記憶の引き出しが整理される</li></ul>`},
+  {cat:"記憶術", title:"記述式は必ず手書きで練習する",
+   body:`書く行為自体が記憶を強化します。タイピングより手書きの方が記憶定着率が高いことが研究で示されています。<ul><li>模範解答を見る前に必ず自分で書く</li><li>書けなかったキーワードだけノートにまとめる</li><li>1日1問でも継続することが重要</li></ul>`},
+  {cat:"記憶術", title:"「なぜ」で繋ぐ記憶法",
+   body:`条文を丸暗記するより「なぜその規定があるか（立法趣旨）」から理解すると忘れにくくなります。<ul><li>行政手続法の「聴聞」→なぜ必要か？→適正手続の保障（憲法31条）</li><li>趣旨→要件→効果の流れで理解する</li></ul>`},
+  {cat:"記憶術", title:"色分けノートで科目を視覚的に管理",
+   body:`科目ごとにノートやマーカーの色を統一すると、視覚的な記憶が補助的に働きます。<ul><li>行政法＝青 / 民法＝赤 / 憲法＝紫 / 商法＝橙 など</li><li>このアプリの科目カラーをそのまま使うと一貫性が出る</li></ul>`},
+
+  // ── 過去問活用 ──
+  {cat:"過去問活用", title:"間違えた問題は「3回ルール」で管理",
+   body:`同じ問題を3回間違えたら「特別弱点リスト」に移し、直前期に集中的に復習します。<ul><li>問題集に×印を記入→2回目も×→「!」マーク→3回目も×→弱点ノートへ</li><li>試験1週間前はこの弱点ノートだけを見直す</li></ul>`},
+  {cat:"過去問活用", title:"正答率データを攻略の指標に使う",
+   body:`市販の過去問集には各問題の正答率が記載されています。これを戦略的に使いましょう。<ul><li>正答率70%以上：必ず正解すべき問題→最優先</li><li>正答率30〜70%：実力差が出る問題→次に取り組む</li><li>正答率30%以下：捨て問候補→時間が余れば</li></ul>`},
+  {cat:"過去問活用", title:"記述式の過去問は全部「書く」",
+   body:`記述式は選択肢を選ぶのと違い、「書けるかどうか」が全てです。必ず自分の手で書いて採点してください。<ul><li>模範解答を先に見ると「わかった気」になってしまう</li><li>制限時間（1問20分）を設けて書く練習を</li><li>キーワードが揃っているかを採点基準に</li></ul>`},
+  {cat:"過去問活用", title:"年度横断で同じ論点を探す",
+   body:`同じ論点が複数年度にわたって繰り返されることに気づくと、出題確率の高い論点が見えてきます。<ul><li>「この論点は過去5年で3回出ている」と把握できる</li><li>テキストで学んだ後、すぐ過去問で論点を確認する習慣を</li></ul>`},
+
+  // ── モチベーション管理 ──
+  {cat:"モチベーション管理", title:"合格率10%の正しい解釈",
+   body:`行政書士試験の合格率は約10%ですが、受験者の多くは十分に勉強していません。<ul><li>800時間以上真剣に学習した人の合格率は格段に高い</li><li>「10人に1人」ではなく「800時間勉強した人の中で」と考える</li><li>継続学習そのものが最大の差別化になる</li></ul>`},
+  {cat:"モチベーション管理", title:"1日サボっても翌日に再開すればいい",
+   body:`完璧主義は挫折の最大の原因です。サボった翌日に再開できれば、それで十分です。<ul><li>「3日坊主」でも再開すれば「3日坊主×100回＝300日学習」になる</li><li>週に1日の休息日を意図的に作る方が長続きする</li><li>毎日続けることより、やめないことが大切</li></ul>`},
+  {cat:"モチベーション管理", title:"SNSの勉強仲間で孤独を解消",
+   body:`独学の最大の敵は孤独感です。オンラインコミュニティを活用しましょう。<ul><li>X（Twitter）の「#行政書士勉強垢」で仲間を探す</li><li>勉強時間や学習内容を投稿すると継続モチベーションが上がる</li><li>合格者の体験談は具体的な学習法のヒントの宝庫</li></ul>`},
+  {cat:"モチベーション管理", title:"チェックリストの「完了」が脳へのご褒美",
+   body:`タスクを完了したときに分泌されるドーパミンをうまく活用しましょう。<ul><li>このアプリのチェックリストに✓を入れる行為自体がモチベーションを維持する</li><li>1日の目標を「○節まで読む」など小さく設定する</li><li>週次で学習記録グラフを眺めて「見える進捗」を実感する</li></ul>`},
+];
+
+let tipIndex = 0;
+
+function showTip(i) {
+  const t = TIPS[i];
+  document.getElementById('tipCat').textContent   = t.cat;
+  document.getElementById('tipTitle').textContent = t.title;
+  document.getElementById('tipBody').innerHTML    = t.body;
+  document.getElementById('tipCounter').textContent = `${i + 1} / ${TIPS.length}`;
+}
+
+function openTips(i) {
+  tipIndex = ((i % TIPS.length) + TIPS.length) % TIPS.length;
+  showTip(tipIndex);
+  document.getElementById('tipsModal').classList.add('show');
+}
+
+function closeTips() {
+  document.getElementById('tipsModal').classList.remove('show');
+}
+
+// ボタンイベント
+document.getElementById('openTipsBtn').addEventListener('click',  () => openTips(tipIndex));
+document.getElementById('closeTipsBtn').addEventListener('click',  closeTips);
+document.getElementById('closeTipsBtn2').addEventListener('click', closeTips);
+document.getElementById('prevTipBtn').addEventListener('click', () => {
+  tipIndex = (tipIndex - 1 + TIPS.length) % TIPS.length;
+  showTip(tipIndex);
+});
+document.getElementById('nextTipBtn').addEventListener('click', () => {
+  tipIndex = (tipIndex + 1) % TIPS.length;
+  showTip(tipIndex);
+});
+
+// オーバーレイ外クリックで閉じる
+document.getElementById('tipsModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTips();
+});
+
+// 起動時に表示（前回の続きから）
+const _savedTip = parseInt(localStorage.getItem('tipIndex') || '0');
+tipIndex = _savedTip % TIPS.length;
+openTips(tipIndex);
+
+// 1時間ごとに次のTipを表示
+setInterval(() => {
+  tipIndex = (tipIndex + 1) % TIPS.length;
+  localStorage.setItem('tipIndex', tipIndex);
+  openTips(tipIndex);
+}, 3600000);
+
+</script>
+</body>
+</html>

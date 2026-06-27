@@ -1612,7 +1612,7 @@ function buildRecChart(c,byDate,today){
   for(let k=0;k<=4;k++){const v=ymax*k/4;const y=Y(v);yticks+=`<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="#f1f5f9"/><text x="${padL-5}" y="${(y+3).toFixed(1)}" font-size="9" fill="#94a3b8" text-anchor="end">${Math.round(v)}</text>`;}
   const fd=days[0],ld=days[n-1];
   const xlab=`<text x="${padL}" y="${H-8}" font-size="9" fill="#94a3b8">${fd.getMonth()+1}/${fd.getDate()}</text><text x="${W-padR}" y="${H-8}" font-size="9" fill="#94a3b8" text-anchor="end">${ld.getMonth()+1}/${ld.getDate()}</text>`;
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:560px">${yticks}${todayLine}<polyline points="${pPts}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>${aLine}${aDot}${xlab}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;max-width:100%">${yticks}${todayLine}<polyline points="${pPts}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>${aLine}${aDot}${xlab}</svg>`;
 }
 
 function renderTrends(){

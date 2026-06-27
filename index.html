@@ -21,7 +21,7 @@
     font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.6; font-size:15px;
     -webkit-font-smoothing:antialiased;
-    min-height:100vh; overflow-x:hidden; position:relative;
+    min-height:100vh; overflow-x:hidden;
   }
   .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
   header.app{
@@ -347,24 +347,25 @@
     .app-header{height:52px;padding:0 12px;}
     .app-header .logo span{display:none;}
     .app-header > div:last-child{gap:4px;}
-    .tips-btn{font-size:11px;padding:5px 9px;gap:3px;white-space:nowrap;}
+    .tips-btn{font-size:11px;padding:6px 10px;gap:4px;}
+    .hdr-label{display:none;}
     .tips-btn span[id=favCount]{display:none;}
     .app-header > div:first-child{min-width:0;flex:1;overflow:hidden;}
-    .app-header > div:last-child{flex:none;gap:4px;}
+    .app-header > div:last-child{flex:none;gap:6px;}
     .main-wrap{padding:12px 10px 60px;}
     .card{padding:14px 12px;}
     .card h2{font-size:14px;}
     .grid{gap:12px;}
-    .field-grid{grid-template-columns:1fr 1fr;}
-    .field-grid input[type=date]{font-size:13px;padding:6px 8px;}
+    .field-grid{grid-template-columns:1fr;}
+    .field-grid input[type=date]{font-size:16px;padding:8px 10px;}
     .stats{grid-template-columns:1fr 1fr;}
     .stat .v{font-size:20px;}
     .daybreak{flex-wrap:wrap;gap:5px;}
     .chip{font-size:11px;padding:4px 8px;}
     /* テーブル共通 */
-    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-    table{width:auto;font-size:11px;}
-    thead th,tbody td{padding:6px 5px;}
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
+    table{width:100%;font-size:11px;}
+    thead th,tbody td{padding:6px 4px;}
     /* 時間配分テーブル：区分・出題形式・配点シェア・1日目安を非表示 */
     #allocTable th:nth-child(2),#allocTable td:nth-child(2),
     #allocTable th:nth-child(3),#allocTable td:nth-child(3),
@@ -378,12 +379,11 @@
     /* 学習記録テーブル */
     #recSubjTable th:nth-child(5),#recSubjTable td:nth-child(5){display:none;}
     /* フォーム1列化 */
-    .rec-form{grid-template-columns:1fr 1fr;}
+    .rec-form{grid-template-columns:1fr;gap:8px;}
+    .rec-form .f.wide,.rec-form .f.note{grid-column:1;}
     .rec-form input,.rec-form select{font-size:16px;}
-    .est-controls{grid-template-columns:1fr 1fr;}
-    .rec-form{grid-template-columns:1fr 1fr;gap:8px;}
-    .rec-form .f.wide{grid-column:span 2;}
     .rec-form input[type=number]{min-width:0;}
+    .est-controls{grid-template-columns:1fr;}
     .kpi{grid-template-columns:1fr 1fr;}
     .kpi .b .v{font-size:17px;}
     .cl-row{flex-wrap:wrap;gap:4px;}
@@ -405,6 +405,10 @@
     .kpi{grid-template-columns:1fr 1fr;}
   }
   .main-wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px;width:100%;box-sizing:border-box;}
+  #settingsBody{transition:opacity .2s ease;}
+  #settingsBody.collapsed{display:none;}
+  #settingsCard h2{margin-bottom:0;}
+  #settingsCard.open h2{margin-bottom:14px;}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -428,11 +432,11 @@
   <div style="display:flex;gap:6px;flex:none">
     <button class="tips-btn" id="openFavBtn" style="background:rgba(255,255,255,.15)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      保存済み<span id="favCount" style="margin-left:3px;background:var(--accent);border-radius:10px;padding:1px 6px;font-size:11px">0</span>
+      <span class="hdr-label">保存済み</span><span id="favCount" style="margin-left:3px;background:var(--accent);border-radius:10px;padding:1px 6px;font-size:11px">0</span>
     </button>
     <button class="tips-btn" id="openTipsBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-      今日のTips
+      <span class="hdr-label">今日のTips</span>
     </button>
   </div>
 </header>
@@ -474,8 +478,12 @@
     <div class="grid">
 
     <!-- 1. 設定 -->
-    <section class="card">
-      <h2><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/><circle cx="17" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg></span>学習計画の前提を設定</h2>
+    <section class="card" id="settingsCard">
+      <h2 id="settingsToggle" style="cursor:pointer;user-select:none;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px"><span class="h2-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/><circle cx="17" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="17" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg></span>学習計画の前提を設定</div>
+        <svg id="settingsChevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .25s;flex:none"><polyline points="6 9 12 15 18 9"/></svg>
+      </h2>
+      <div id="settingsBody">
       <div class="field-grid">
         <div>
           <label class="fld">勉強開始日</label>
@@ -509,6 +517,7 @@
           </label>
         </div>
       </div>
+      </div><!-- /settingsBody -->
     </section>
 
     <!-- 2. サマリー -->
@@ -2186,6 +2195,24 @@ document.getElementById('ocrInput').addEventListener('change', function(){
   f._inputEl = this;
   handleOcrFile(f);
 });
+
+/* ============================================================
+   設定カード折りたたみ
+   ============================================================ */
+(function(){
+  const card = document.getElementById('settingsCard');
+  const toggle = document.getElementById('settingsToggle');
+  const body = document.getElementById('settingsBody');
+  const chevron = document.getElementById('settingsChevron');
+  if(!toggle) return;
+  card.classList.add('open');
+  toggle.addEventListener('click', ()=>{
+    const isOpen = !body.classList.contains('collapsed');
+    body.classList.toggle('collapsed', isOpen);
+    chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+    card.classList.toggle('open', !isOpen);
+  });
+})();
 
 /* ============================================================
    ハンバーガーメニュー（モバイル用）

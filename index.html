@@ -156,6 +156,10 @@
   .cl-row.done .nm{color:var(--muted);text-decoration:line-through}
   .cl-meta{font-size:11px;color:var(--muted);white-space:nowrap}
   .cl-time{font-weight:700;color:var(--accent);font-size:12px;white-space:nowrap;min-width:54px;text-align:right}
+  .cl-sub-chk{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);cursor:pointer;white-space:nowrap;border:1px solid var(--line);border-radius:6px;padding:2px 6px;transition:all .15s;user-select:none;}
+  .cl-sub-chk input{display:none;}
+  .cl-sub-chk:hover{border-color:var(--accent);color:var(--accent);}
+  .cl-sub-chk.checked{background:var(--accent);color:#fff;border-color:var(--accent);}
 
   tfoot td{}
   .note{font-size:12px;color:var(--muted);background:#f8fafc;border:1px dashed var(--line);border-radius:10px;padding:11px 13px;margin-top:12px}
@@ -211,7 +215,10 @@
   .log-del{cursor:pointer;color:var(--danger);border:none;background:none;font-size:15px;padding:2px 6px;line-height:1}
   .typebadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
   .typebadge.in{background:var(--accent-soft);color:var(--accent)}
+  .typebadge.in-audio{background:#ede9fe;color:#7c3aed}
+  .typebadge.in-video{background:#fef9c3;color:#b45309}
   .typebadge.out{background:var(--ok-soft);color:var(--ok)}
+  .log-row .ltime{font-size:11px;color:var(--muted);white-space:nowrap;background:#f1f5f9;border-radius:5px;padding:1px 6px}
   .empty{text-align:center;color:var(--muted);font-size:13px;padding:22px}
   @media print{.toolbar,.btn,.tabs,.rec-form,.log-del{display:none}body{background:#fff}}
 
@@ -260,6 +267,16 @@
   .modal-footer{display:flex;gap:8px;justify-content:flex-end;align-items:center;}
   .modal-footer .modal-nav{display:flex;gap:6px;margin-right:auto;}
 
+  /* ── Fav button ── */
+  .fav-btn{border:1px solid var(--accent);color:var(--accent);background:#fff;display:flex;align-items:center;gap:5px;}
+  .fav-btn.saved{background:var(--accent);color:#fff;}
+  .fav-item{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;position:relative;}
+  .fav-item-cat{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.06em;margin-bottom:3px;}
+  .fav-item-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+  .fav-item-body{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .fav-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 5px;}
+  .fav-del:hover{color:var(--accent);}
+  .fav-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
   /* ── Tab Navigation ── */
   @keyframes tabFadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   .app-header{
@@ -307,10 +324,16 @@
     </div>
     <span>行政書士試験 学習計画</span>
   </div>
-  <button class="tips-btn" id="openTipsBtn">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-    今日のTips
-  </button>
+  <div style="display:flex;gap:8px">
+    <button class="tips-btn" id="openFavBtn" style="background:rgba(255,255,255,.15)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      保存済み<span id="favCount" style="margin-left:3px;background:var(--accent);border-radius:10px;padding:1px 6px;font-size:11px">0</span>
+    </button>
+    <button class="tips-btn" id="openTipsBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      今日のTips
+    </button>
+  </div>
 </header>
 
 <!-- タブナビゲーション -->
@@ -322,6 +345,7 @@
     <li data-tab="tab4"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>チェックリスト</li>
     <li data-tab="tab5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>学習記録</li>
     <li data-tab="tab6"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>出題傾向</li>
+    <li data-tab="tab7"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20"/><path d="M12 8v4l3 3"/></svg>AI教師</li>
   </ul>
 </nav>
 
@@ -376,6 +400,21 @@
       <div class="stats" id="stats"></div>
       <div class="daybreak" id="daybreak"></div>
       <div class="note" id="periodNote"></div>
+    </section>
+
+    <!-- Gemini API設定 -->
+    <section class="card">
+      <h2><span class="num">★</span>AI機能設定（Gemini APIキー）</h2>
+      <p class="hint" style="margin-top:-6px">Google Gemini APIキーを設定すると、AI教師タブで答案用紙の写真から自動入力できるようになります。キーはこの端末のみに保存され、外部に送信されません（Googleのサーバーへの問い合わせを除く）。</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input type="password" id="geminiKey" placeholder="AIzaSy..." style="flex:1;min-width:200px;font-family:monospace;font-size:13px">
+        <button class="btn primary" id="saveGeminiKey">保存</button>
+        <button class="btn ghost" id="clearGeminiKey">削除</button>
+      </div>
+      <div id="geminiKeyStatus" style="margin-top:8px;font-size:12px"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--muted)">
+        取得方法：<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a> にアクセス → 「Create API key」→ 表示されたキーをコピー（無料・クレジットカード不要）
+      </div>
     </section>
 
     </div><!-- /grid -->
@@ -538,8 +577,15 @@
       <div class="rec-form">
         <div class="f"><label>日付</label><input type="date" id="recDate"></div>
         <div class="f"><label>科目</label><select id="recSubject"></select></div>
-        <div class="f"><label>種別</label><select id="recType"><option value="in">インプット</option><option value="out">アウトプット</option></select></div>
-        <div class="f"><label>時間（h）</label><input type="number" id="recHours" min="0" max="24" step="0.25" value="1"></div>
+        <div class="f"><label>種別</label><select id="recType">
+          <option value="in">テキスト精読</option>
+          <option value="in-audio">音声解説（NotebookLM）</option>
+          <option value="in-video">YouTube講座視聴</option>
+          <option value="out">アウトプット（問題演習）</option>
+        </select></div>
+        <div class="f"><label>開始時刻</label><input type="time" id="recStart" placeholder="10:00"></div>
+        <div class="f"><label>終了時刻</label><input type="time" id="recEnd" placeholder="11:00"></div>
+        <div class="f"><label>時間（h）<span id="recHoursHint" style="font-size:10px;color:var(--accent);margin-left:4px"></span></label><input type="number" id="recHours" min="0" max="24" step="0.25" value="1"></div>
         <div class="f note"><label>メモ（任意）</label><input type="text" id="recNote" placeholder="例：行政手続法 過去問 R5"></div>
         <div class="f"><label>&nbsp;</label><button class="btn primary" id="recAdd">＋ 記録する</button></div>
       </div>
@@ -583,6 +629,68 @@
     </div><!-- /grid -->
   </div><!-- /tab6 -->
 
+  <!-- Tab 7: AI教師 -->
+  <div class="tab-panel" id="tab7">
+    <div class="grid">
+    <section class="card">
+      <h2><span class="num" style="background:var(--accent)">AI</span>専属 行政書士AI教師</h2>
+      <p class="hint" style="margin-top:-6px">演習結果を記録すると、あなたの得意・不得意を分析して今やるべき学習をアドバイスします。</p>
+
+      <!-- 画像OCR -->
+      <div id="ocrBox" style="border:2px dashed var(--line);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center;cursor:pointer;transition:border-color .2s" onclick="document.getElementById('ocrInput').click()">
+        <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:6px">答案用紙・問題冊子の写真をアップロード</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">スマホのカメラで撮影してそのまま送信 → AIが自動読み取り（Gemini APIキー必要）</div>
+        <div id="ocrStatus" style="margin-top:8px;font-size:12px;font-weight:700"></div>
+      </div>
+
+      <!-- 演習記録フォーム -->
+      <div style="border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--ink)">演習結果を記録</div>
+        <div class="rec-form" style="gap:10px">
+          <div class="f"><label>実施日</label><input type="date" id="qDate"></div>
+          <div class="f"><label>教材名</label><input type="text" id="qSource" placeholder="例：令和5年度本試験"></div>
+          <div class="f"><label>科目</label><select id="qSubject"></select></div>
+          <div class="f"><label>問題数</label><input type="number" id="qTotal" min="1" max="100" step="1" value="5" style="font-size:18px;font-weight:700;text-align:center"></div>
+          <div class="f"><label>正解数</label><input type="number" id="qCorrect" min="0" max="100" step="1" value="3" style="font-size:18px;font-weight:700;text-align:center;color:var(--ok)"></div>
+          <div class="f note"><label>メモ（任意）</label><input type="text" id="qNote" placeholder="例：時間切れ・苦手論点あり"></div>
+          <div class="f"><label>&nbsp;</label><button class="btn primary" id="qAdd" style="width:100%;padding:12px;font-size:15px">記録する</button></div>
+        </div>
+      </div>
+
+      <!-- AI分析パネル -->
+      <div style="background:linear-gradient(135deg,#1b2a4a,#2c3e6b);border-radius:14px;padding:18px;margin-bottom:16px;color:#fff">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div style="background:var(--accent);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div>
+            <div style="font-size:11px;opacity:.7;letter-spacing:.06em;font-weight:700">AI ADVISOR</div>
+            <div style="font-size:15px;font-weight:800">あなた専属の学習アドバイス</div>
+          </div>
+          <button class="btn sm" id="refreshAdvice" style="margin-left:auto;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            更新
+          </button>
+        </div>
+        <div id="aiAdvice" style="font-size:13.5px;line-height:1.8;opacity:.95">演習記録を追加するとここに分析が表示されます。</div>
+      </div>
+
+      <!-- 科目別正答率 -->
+      <div id="qSubjChart" style="margin-bottom:16px"></div>
+
+      <!-- 記録履歴 -->
+      <div class="toolbar" style="margin-bottom:8px">
+        <b style="font-size:13px">演習履歴</b>
+        <span style="flex:1"></span>
+        <button class="btn sm ghost" id="qClear">全記録を削除</button>
+      </div>
+      <div id="qList"></div>
+    </section>
+    </div>
+  </div><!-- /tab7 -->
+
 </div><!-- /main-wrap -->
 
 <!-- Tips Modal -->
@@ -605,7 +713,31 @@
         <button class="btn sm ghost" id="prevTipBtn">← 前へ</button>
         <button class="btn sm" id="nextTipBtn">次へ →</button>
       </div>
+      <button class="btn sm fav-btn" id="favTipBtn" title="お気に入りに保存">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        保存
+      </button>
       <button class="btn primary sm" id="closeTipsBtn2">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- お気に入りTipsモーダル -->
+<div class="modal-overlay" id="favModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:#fce4f1">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <div class="modal-titles">
+        <div class="modal-cat">保存済み</div>
+        <h3 class="modal-title">お気に入りTips</h3>
+      </div>
+      <button class="modal-close" id="closeFavBtn">✕</button>
+    </div>
+    <div id="favList" style="max-height:420px;overflow-y:auto;margin-top:8px"></div>
+    <div class="modal-footer" style="margin-top:12px">
+      <button class="btn primary sm" id="closeFavBtn2">閉じる</button>
     </div>
   </div>
 </div>
@@ -989,7 +1121,13 @@ function buildSubjectBlock(sub){
   sub.chapters.forEach((ch,ci)=>{
     body+=`<div class="cl-chap-t">${ch.t}</div>`;
     ch.s.forEach((sec,si)=>{const key=`${sub.id}-${ci}-${si}`;const on=!!checks[activePass][key];const h=itemHours(sec[2],activePass);
-      body+=`<div class="cl-row ${on?'done':''}"><label><input type="checkbox" data-key="${key}" ${on?'checked':''}><span class="nm">${sec[0]}</span></label><span class="cl-meta">${sec[2]}p</span><span class="cl-time">${fmtHr(h)}</span></div>`;});
+      const onA=!!checks[activePass][key+'-a'];const onV=!!checks[activePass][key+'-v'];
+      body+=`<div class="cl-row ${on?'done':''}"><label><input type="checkbox" data-key="${key}" ${on?'checked':''}><span class="nm">${sec[0]}</span></label><span class="cl-meta">${sec[2]}p</span><span class="cl-time">${fmtHr(h)}</span>`+
+        `<label class="cl-sub-chk ${onA?'checked':''}"><input type="checkbox" data-subkey="${key}-a" ${onA?'checked':''}>`+
+        `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>音声</label>`+
+        `<label class="cl-sub-chk ${onV?'checked':''}"><input type="checkbox" data-subkey="${key}-v" ${onV?'checked':''}>`+
+        `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>動画</label>`+
+        `</div>`;});
   });
   return `<details class="cl-sub" data-sub="${sub.id}" ${subOpen[sub.id]?'open':''}>
     <summary><span class="swatch" style="background:${SUBJ_COLOR[sub.id]};width:12px;height:12px"></span><span>${sub.name}</span>
@@ -1002,13 +1140,19 @@ function buildSubjectBlock(sub){
 function bindChecklist(c){
   const wrap=document.getElementById('checklist');
   wrap.querySelectorAll('details.cl-sub').forEach(d=>d.addEventListener('toggle',()=>{subOpen[d.dataset.sub]=d.open;}));
-  wrap.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',()=>{
+  wrap.querySelectorAll('input[type=checkbox][data-key]').forEach(cb=>cb.addEventListener('change',()=>{
     const key=cb.dataset.key;
     if(cb.checked)checks[activePass][key]=1; else delete checks[activePass][key];
     saveChecks();
-    cb.closest('.cl-row').classList.toggle('done',cb.checked); // 該当行だけ更新
+    cb.closest('.cl-row').classList.toggle('done',cb.checked);
     const it=ITEMS.find(x=>x.key===key); if(it)updateSubjectSummary(it.subId);
-    renderPassHead(); renderPassTabs(c); // 進捗ヘッダ・タブのみ更新（リスト再構築なし）
+    renderPassHead(); renderPassTabs(c);
+  }));
+  wrap.querySelectorAll('input[type=checkbox][data-subkey]').forEach(cb=>cb.addEventListener('change',()=>{
+    const key=cb.dataset.subkey;
+    if(cb.checked)checks[activePass][key]=1; else delete checks[activePass][key];
+    saveChecks();
+    cb.closest('.cl-sub-chk').classList.toggle('checked',cb.checked);
   }));
   wrap.querySelectorAll('.subAll').forEach(b=>b.addEventListener('click',(e)=>{
     e.preventDefault(); e.stopPropagation();
@@ -1055,6 +1199,18 @@ function passStats(p){
 
 /* ---- 8. 学習記録（予実） ---- */
 const SUBJ_NAME={}; SPEC.subjects.forEach(s=>SUBJ_NAME[s.id]=s.name);
+function calcRecTime(){
+  const s=document.getElementById('recStart').value;
+  const e=document.getElementById('recEnd').value;
+  if(!s||!e) return;
+  const [sh,sm]=s.split(':').map(Number);
+  const [eh,em]=e.split(':').map(Number);
+  let mins=(eh*60+em)-(sh*60+sm);
+  if(mins<=0) mins+=24*60; // 日をまたいだ場合
+  const hrs=Math.round(mins/15)*0.25; // 15分単位で丸め
+  document.getElementById('recHours').value=hrs;
+  document.getElementById('recHoursHint').textContent=`← 自動計算 (${Math.floor(mins/60)}h${mins%60>0?mins%60+'m':''})`;
+}
 function initRecordForm(){
   const sel=document.getElementById('recSubject');
   sel.innerHTML=SPEC.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
@@ -1063,6 +1219,8 @@ function initRecordForm(){
   document.getElementById('recClear').addEventListener('click',()=>{
     if(logs.length&&confirm('すべての学習記録を削除しますか？この操作は取り消せません。')){logs=[];saveLogs();render();}
   });
+  document.getElementById('recStart').addEventListener('change', calcRecTime);
+  document.getElementById('recEnd').addEventListener('change', calcRecTime);
 }
 function addLog(){
   const date=document.getElementById('recDate').value;
@@ -1070,9 +1228,11 @@ function addLog(){
   const type=document.getElementById('recType').value;
   const hours=parseFloat(document.getElementById('recHours').value)||0;
   const note=document.getElementById('recNote').value.trim();
+  const startTime=document.getElementById('recStart').value;
+  const endTime=document.getElementById('recEnd').value;
   if(!date){alert('日付を入力してください。');return;}
   if(hours<=0){alert('時間を入力してください。');return;}
-  logs.push({id:'l'+Date.now()+'-'+Math.floor(Math.random()*1000),date,subjectId,type,hours,note});
+  logs.push({id:'l'+Date.now()+'-'+Math.floor(Math.random()*1000),date,subjectId,type,hours,note,startTime,endTime});
   saveLogs();
   document.getElementById('recNote').value='';
   render();
@@ -1090,7 +1250,7 @@ function plannedHoursThrough(c,dateObj){
 function renderRecord(c){
   const today=new Date(); today.setHours(0,0,0,0);
   const actualTotal=logs.reduce((a,l)=>a+(+l.hours||0),0);
-  const bySubj={},byType={in:0,out:0},byDate={};
+  const bySubj={},byType={in:0,'in-audio':0,'in-video':0,out:0},byDate={};
   logs.forEach(l=>{bySubj[l.subjectId]=(bySubj[l.subjectId]||0)+(+l.hours||0);
     byType[l.type]=(byType[l.type]||0)+(+l.hours||0);
     byDate[l.date]=(byDate[l.date]||0)+(+l.hours||0);});
@@ -1128,8 +1288,15 @@ function renderRecord(c){
   // IO予実
   const inp=parseFloat(els.ioInput.value)||45;
   const planIn=c.totalHours*inp/100, planOut=c.totalHours*(100-inp)/100;
+  const totalIn=(byType.in||0)+(byType['in-audio']||0)+(byType['in-video']||0);
   document.getElementById('recIONote').innerHTML=
-    `<b>インプット/アウトプット 予実：</b> 📖 インプット 予定 ${fmtHr(planIn)} → 実績 <b>${fmtHr(byType.in)}</b>（${planIn>0?(byType.in/planIn*100).toFixed(0):0}%） ／ ✍️ アウトプット 予定 ${fmtHr(planOut)} → 実績 <b>${fmtHr(byType.out)}</b>（${planOut>0?(byType.out/planOut*100).toFixed(0):0}%）`;
+    `<b>インプット/アウトプット 予実：</b><br>`+
+    `インプット合計 予定 ${fmtHr(planIn)} → 実績 <b>${fmtHr(totalIn)}</b>（${planIn>0?(totalIn/planIn*100).toFixed(0):0}%）`+
+    `<div style="font-size:12px;color:var(--muted);margin:4px 0 6px 12px">`+
+    `テキスト精読：<b>${fmtHr(byType.in)}</b>　`+
+    `音声解説(NotebookLM)：<b>${fmtHr(byType['in-audio'])}</b>　`+
+    `YouTube視聴：<b>${fmtHr(byType['in-video'])}</b></div>`+
+    `アウトプット 予定 ${fmtHr(planOut)} → 実績 <b>${fmtHr(byType.out)}</b>（${planOut>0?(byType.out/planOut*100).toFixed(0):0}%）`;
   // 履歴
   const list=document.getElementById('recList');
   if(!logs.length){list.innerHTML=`<div class="empty">まだ記録がありません。上のフォームから今日の学習を記録しましょう。</div>`;}
@@ -1137,9 +1304,12 @@ function renderRecord(c){
     const sorted=[...logs].sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:(a.id<b.id?1:-1)));
     list.innerHTML=sorted.map(l=>{
       const d=new Date(l.date+'T00:00:00'); const dl=`${d.getMonth()+1}/${d.getDate()}(${'日月火水木金土'[d.getDay()]})`;
+      const typeLabel={'in':'精読','in-audio':'音声','in-video':'動画','out':'演習'}[l.type]||l.type;
+      const timeRange=l.startTime&&l.endTime?`<span class="ltime">${l.startTime}〜${l.endTime}</span>`:'';
       return `<div class="log-row"><span class="ld">${dl}</span>
         <span class="ls">${SUBJ_NAME[l.subjectId]||l.subjectId}</span>
-        <span class="typebadge ${l.type}">${l.type==='in'?'IN':'OUT'}</span>
+        <span class="typebadge ${l.type}">${typeLabel}</span>
+        ${timeRange}
         <span class="lh">${(+l.hours)}h</span>
         <span class="lnote">${l.note?escapeHtml(l.note):''}</span>
         <button class="log-del" data-id="${l.id}" title="削除">✕</button></div>`;
@@ -1335,6 +1505,7 @@ function showTip(i) {
   document.getElementById('tipTitle').textContent = t.title;
   document.getElementById('tipBody').innerHTML    = t.body;
   document.getElementById('tipCounter').textContent = `${i + 1} / ${TIPS.length}`;
+  updateFavBtn();
 }
 
 function openTips(i) {
@@ -1365,6 +1536,62 @@ document.getElementById('tipsModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeTips();
 });
 
+// ── お気に入り ──
+const LS_FAV = 'gyoseishoshi_favtips_v1';
+let favTips = [];
+try { const f = JSON.parse(localStorage.getItem(LS_FAV)); if (Array.isArray(f)) favTips = f; } catch(e){}
+
+function saveFavs(){ localStorage.setItem(LS_FAV, JSON.stringify(favTips)); }
+
+function updateFavBtn(){
+  const btn = document.getElementById('favTipBtn');
+  const isSaved = favTips.includes(tipIndex);
+  btn.classList.toggle('saved', isSaved);
+  btn.innerHTML = isSaved
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>保存済`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>保存`;
+  document.getElementById('favCount').textContent = favTips.length;
+}
+
+function toggleFav(){
+  const idx = favTips.indexOf(tipIndex);
+  if (idx === -1) favTips.push(tipIndex);
+  else favTips.splice(idx, 1);
+  saveFavs();
+  updateFavBtn();
+}
+
+function openFavModal(){
+  const list = document.getElementById('favList');
+  if (favTips.length === 0) {
+    list.innerHTML = `<div class="fav-empty">保存したTipsはまだありません。<br>Tipsを読んで気に入ったものを「保存」ボタンで追加しましょう！</div>`;
+  } else {
+    list.innerHTML = favTips.map(i => {
+      const t = TIPS[i];
+      return `<div class="fav-item">
+        <button class="fav-del" onclick="removeFav(${i})" title="削除">✕</button>
+        <div class="fav-item-cat">${t.cat}</div>
+        <div class="fav-item-title">${t.title}</div>
+        <div class="fav-item-body">${t.body.replace(/<[^>]+>/g,'').substring(0,120)}…</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('favModal').classList.add('show');
+}
+
+function removeFav(i){
+  favTips = favTips.filter(x => x !== i);
+  saveFavs();
+  updateFavBtn();
+  openFavModal();
+}
+
+document.getElementById('favTipBtn').addEventListener('click', toggleFav);
+document.getElementById('openFavBtn').addEventListener('click', openFavModal);
+document.getElementById('closeFavBtn').addEventListener('click', () => document.getElementById('favModal').classList.remove('show'));
+document.getElementById('closeFavBtn2').addEventListener('click', () => document.getElementById('favModal').classList.remove('show'));
+document.getElementById('favModal').addEventListener('click', e => { if(e.target===e.currentTarget) document.getElementById('favModal').classList.remove('show'); });
+
 // 起動時に表示（前回の続きから）
 const _savedTip = parseInt(localStorage.getItem('tipIndex') || '0');
 tipIndex = _savedTip % TIPS.length;
@@ -1376,6 +1603,318 @@ setInterval(() => {
   localStorage.setItem('tipIndex', tipIndex);
   openTips(tipIndex);
 }, 3600000);
+
+/* ============================================================
+   AI教師 – 演習記録 & アドバイスエンジン
+   ============================================================ */
+const LS_QUIZ = 'gyoseishoshi_quiz_v1';
+let qLogs = [];
+try { const q = JSON.parse(localStorage.getItem(LS_QUIZ)); if (Array.isArray(q)) qLogs = q; } catch(e){}
+function saveQuiz(){ localStorage.setItem(LS_QUIZ, JSON.stringify(qLogs)); }
+
+function initQuizForm(){
+  const sel = document.getElementById('qSubject');
+  if(!sel) return;
+  sel.innerHTML = SPEC.subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('qDate').value = ymd(new Date());
+  document.getElementById('qAdd').addEventListener('click', addQuizLog);
+  document.getElementById('qClear').addEventListener('click', ()=>{
+    if(qLogs.length && confirm('全演習記録を削除しますか？')) { qLogs=[]; saveQuiz(); renderQuizTab(); }
+  });
+  document.getElementById('refreshAdvice').addEventListener('click', renderQuizTab);
+}
+
+function addQuizLog(){
+  const date = document.getElementById('qDate').value;
+  const source = document.getElementById('qSource').value.trim() || '未入力';
+  const subjectId = document.getElementById('qSubject').value;
+  const total = parseInt(document.getElementById('qTotal').value)||0;
+  const correct = parseInt(document.getElementById('qCorrect').value)||0;
+  const note = document.getElementById('qNote').value.trim();
+  if(!date){ alert('日付を入力してください。'); return; }
+  if(total <= 0){ alert('問題数を入力してください。'); return; }
+  if(correct > total){ alert('正解数が問題数を超えています。'); return; }
+  qLogs.push({ id:'q'+Date.now(), date, source, subjectId, total, correct, note });
+  saveQuiz();
+  document.getElementById('qNote').value = '';
+  document.getElementById('qDate').value = ymd(new Date());
+  renderQuizTab();
+}
+
+function deleteQuizLog(id){ qLogs = qLogs.filter(q=>q.id!==id); saveQuiz(); renderQuizTab(); }
+
+/* 科目別集計 */
+function quizBySubject(){
+  const map = {};
+  SPEC.subjects.forEach(s=>{ map[s.id]={total:0,correct:0,sessions:0}; });
+  qLogs.forEach(q=>{
+    if(!map[q.subjectId]) map[q.subjectId]={total:0,correct:0,sessions:0};
+    map[q.subjectId].total += q.total;
+    map[q.subjectId].correct += q.correct;
+    map[q.subjectId].sessions += 1;
+  });
+  return map;
+}
+
+/* AIアドバイス生成（ルールベース） */
+function generateAdvice(bySubj, daysToExam){
+  if(qLogs.length === 0){
+    return '演習記録がまだありません。過去問・模試の結果を記録すると、あなたの弱点科目と優先学習プランをここに表示します。';
+  }
+  const attempted = SPEC.subjects.filter(s=>bySubj[s.id]&&bySubj[s.id].total>0);
+  if(attempted.length === 0) return '記録が見つかりません。';
+
+  const rated = attempted.map(s=>{
+    const b = bySubj[s.id];
+    const rate = b.total>0 ? b.correct/b.total*100 : 0;
+    return { ...s, rate, total:b.total, correct:b.correct };
+  }).sort((a,b)=> (b.points*((100-b.rate)/100)) - (a.points*((100-a.rate)/100)));
+
+  const weak = rated.filter(s=>s.rate < 50);
+  const mid  = rated.filter(s=>s.rate >= 50 && s.rate < 70);
+  const good = rated.filter(s=>s.rate >= 70);
+  const urgent = rated.filter(s=>s.rate < 50 && (s.priority==='最重要'||s.priority==='重要'));
+
+  let lines = [];
+
+  // 総評
+  const totalQ = qLogs.reduce((a,q)=>a+q.total,0);
+  const totalC = qLogs.reduce((a,q)=>a+q.correct,0);
+  const overallRate = totalQ>0 ? (totalC/totalQ*100).toFixed(1) : 0;
+  lines.push(`【総評】${qLogs.length}回の演習・計${totalQ}問を分析しました。全体の正答率は <b>${overallRate}%</b>（${totalC}/${totalQ}問）。`);
+
+  if(daysToExam > 0) lines.push(`試験まで残り <b>${daysToExam}日</b>。以下の優先順で学習を進めてください。`);
+
+  // 緊急警告
+  if(urgent.length > 0){
+    lines.push(`\n⚠️【今すぐ対策が必要】配点の大きい科目で正答率が低い状態です：`);
+    urgent.forEach(s=>{
+      lines.push(`・<b>${s.name}</b>（${s.points}点・${s.priority}）正答率 <b style="color:#f87171">${s.rate.toFixed(0)}%</b> → ${s.tip}`);
+    });
+  }
+
+  // 弱点
+  if(weak.filter(s=>!urgent.includes(s)).length > 0){
+    lines.push(`\n📌【要強化】正答率50%未満の科目：`);
+    weak.filter(s=>!urgent.includes(s)).forEach(s=>{
+      lines.push(`・<b>${s.name}</b> ${s.rate.toFixed(0)}% — ${s.topics[0]}などを重点復習`);
+    });
+  }
+
+  // 中間層
+  if(mid.length > 0){
+    lines.push(`\n📈【もう一息】正答率50〜70%：あと少しで安定得点源になります。`);
+    mid.forEach(s=>lines.push(`・<b>${s.name}</b> ${s.rate.toFixed(0)}% — 演習量を増やして定着を`));
+  }
+
+  // 得意
+  if(good.length > 0){
+    lines.push(`\n✅【得意科目】${good.map(s=>`${s.name}(${s.rate.toFixed(0)}%)`).join('・')} — 維持しながら弱点に時間を回しましょう。`);
+  }
+
+  // 未演習
+  const notTried = SPEC.subjects.filter(s=>!bySubj[s.id]||bySubj[s.id].total===0);
+  if(notTried.length > 0){
+    lines.push(`\n🔲【未演習】${notTried.map(s=>s.name).join('・')} — データがないため分析できません。早めに取り組みましょう。`);
+  }
+
+  // 総合アクション
+  lines.push(`\n💡【今週のアクション】`);
+  if(urgent.length > 0) lines.push(`① ${urgent[0].name}を最優先。過去問を最低5年分・3周目標。`);
+  else if(weak.length > 0) lines.push(`① ${weak[0].name}の弱点論点をテキストに戻って確認。`);
+  if(mid.length > 0) lines.push(`② ${mid[0].name}の演習数を1.5倍に増やす。`);
+  if(good.length > 0) lines.push(`③ ${good[0].name}は週1回の確認程度で維持。浮いた時間を弱点補強へ。`);
+
+  return lines.join('<br>');
+}
+
+/* タブ全体を描画 */
+function renderQuizTab(){
+  const bySubj = quizBySubject();
+  const c = computeDays();
+
+  // AIアドバイス
+  const adv = document.getElementById('aiAdvice');
+  if(adv) adv.innerHTML = generateAdvice(bySubj, c.daysToExam);
+
+  // 科目別正答率バー
+  const chart = document.getElementById('qSubjChart');
+  if(chart){
+    const attempted = SPEC.subjects.filter(s=>bySubj[s.id]&&bySubj[s.id].total>0);
+    if(attempted.length === 0){
+      chart.innerHTML = '<div class="hint" style="text-align:center;padding:12px">演習記録を追加すると科目別正答率が表示されます</div>';
+    } else {
+      chart.innerHTML = '<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--ink)">科目別 正答率</div>' +
+        attempted.map(s=>{
+          const b = bySubj[s.id];
+          const rate = b.total>0 ? b.correct/b.total*100 : 0;
+          const col = rate>=70?'var(--ok)':rate>=50?'var(--accent)':'#f87171';
+          return `<div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+              <span><span class="swatch" style="background:${s.color};display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle"></span><b>${s.name}</b>（${s.priority}・${s.points}点）</span>
+              <span style="font-weight:700;color:${col}">${rate.toFixed(0)}% <span style="color:var(--muted);font-weight:400">${b.correct}/${b.total}問</span></span>
+            </div>
+            <div style="height:10px;background:#e8f0fa;border-radius:5px;overflow:hidden">
+              <div style="height:100%;width:${Math.min(100,rate)}%;background:${col};border-radius:5px;transition:width .4s"></div>
+            </div>
+          </div>`;
+        }).join('');
+    }
+  }
+
+  // 履歴
+  const list = document.getElementById('qList');
+  if(list){
+    if(qLogs.length===0){
+      list.innerHTML = '<div class="empty">まだ記録がありません。上のフォームから演習結果を記録しましょう。</div>';
+    } else {
+      const sorted = [...qLogs].sort((a,b)=>a.date<b.date?1:-1);
+      list.innerHTML = sorted.map(q=>{
+        const s = SPEC.subjects.find(x=>x.id===q.subjectId)||{name:q.subjectId,color:'#ccc'};
+        const rate = q.total>0?(q.correct/q.total*100).toFixed(0):0;
+        const col = rate>=70?'var(--ok)':rate>=50?'var(--accent)':'#f87171';
+        const d = new Date(q.date+'T00:00:00');
+        return `<div class="log-row" style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #f4f6fb;font-size:13px">
+          <span style="color:var(--muted);font-size:11px;white-space:nowrap">${d.getMonth()+1}/${d.getDate()}</span>
+          <span class="swatch" style="background:${s.color};width:10px;height:10px;border-radius:2px;flex:none"></span>
+          <span style="flex:1;font-weight:600">${s.name}</span>
+          <span style="font-size:11px;color:var(--muted)">${q.source}</span>
+          <span style="font-weight:700;color:${col}">${rate}%</span>
+          <span style="color:var(--muted);font-size:11px">${q.correct}/${q.total}</span>
+          ${q.note?`<span style="font-size:11px;color:var(--muted);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${q.note}">${q.note}</span>`:''}
+          <button class="log-del" onclick="deleteQuizLog('${q.id}')">✕</button>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+/* ============================================================
+   Gemini APIキー管理 & 画像OCR
+   ============================================================ */
+const LS_GKEY = 'gyoseishoshi_gemini_key';
+
+function initGeminiSettings(){
+  const keyEl = document.getElementById('geminiKey');
+  const statusEl = document.getElementById('geminiKeyStatus');
+  if(!keyEl) return;
+  const saved = localStorage.getItem(LS_GKEY);
+  if(saved){ keyEl.value = saved; statusEl.textContent = '✅ APIキーが設定済みです。画像OCRが使えます。'; statusEl.style.color='var(--ok)'; }
+
+  document.getElementById('saveGeminiKey').addEventListener('click', ()=>{
+    const v = keyEl.value.trim();
+    if(!v){ statusEl.textContent = 'キーを入力してください。'; statusEl.style.color='#f87171'; return; }
+    localStorage.setItem(LS_GKEY, v);
+    statusEl.textContent = '✅ 保存しました！AI教師タブで画像OCRが使えます。';
+    statusEl.style.color = 'var(--ok)';
+  });
+
+  document.getElementById('clearGeminiKey').addEventListener('click', ()=>{
+    localStorage.removeItem(LS_GKEY);
+    keyEl.value = '';
+    statusEl.textContent = 'APIキーを削除しました。';
+    statusEl.style.color = 'var(--muted)';
+  });
+}
+initGeminiSettings();
+try { initQuizForm(); } catch(e){ console.warn('initQuizForm:', e); }
+try { renderQuizTab(); } catch(e){ console.warn('renderQuizTab:', e); }
+
+/* 画像OCR */
+document.getElementById('ocrInput').addEventListener('change', async function(){
+  const file = this.files[0];
+  if(!file) return;
+  const apiKey = localStorage.getItem(LS_GKEY);
+  const statusEl = document.getElementById('ocrStatus');
+  const ocrBox = document.getElementById('ocrBox');
+
+  if(!apiKey){
+    statusEl.textContent = '⚠️ Gemini APIキーが未設定です。概要・設定タブで設定してください。';
+    statusEl.style.color = '#f87171';
+    return;
+  }
+
+  statusEl.textContent = '📷 画像を解析中...';
+  statusEl.style.color = 'var(--accent)';
+  ocrBox.style.borderColor = 'var(--accent)';
+
+  try {
+    // 画像をBase64に変換
+    const base64 = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => res(e.target.result.split(',')[1]);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+
+    const subjectList = SPEC.subjects.map(s=>`${s.name}(id:${s.id})`).join('、');
+    const prompt = `この画像は行政書士試験の答案用紙または問題冊子です。
+以下の情報を読み取り、必ずJSON形式のみで返してください（説明文不要）。
+読み取り対象：教材名（テスト名・年度）、科目名、問題数、正解数。
+科目は必ず以下のIDで返すこと：${subjectList}
+複数科目ある場合は配列で返す。読み取れない場合はnullを使用。
+JSONフォーマット：{"source":"教材名","results":[{"subjectId":"科目ID","total":問題数,"correct":正解数}]}`;
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [
+          { text: prompt },
+          { inline_data: { mime_type: file.type, data: base64 } }
+        ]}]
+      })
+    });
+
+    if(!res.ok){ const err = await res.json(); throw new Error(err.error?.message || `HTTP ${res.status}`); }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // JSONを抽出してパース
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('AIの応答からJSONを読み取れませんでした。');
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    // フォームに自動入力
+    if(parsed.source) document.getElementById('qSource').value = parsed.source;
+    document.getElementById('qDate').value = ymd(new Date());
+
+    if(parsed.results && parsed.results.length > 0){
+      const first = parsed.results[0];
+      const subjSel = document.getElementById('qSubject');
+      if(first.subjectId){
+        const opt = [...subjSel.options].find(o=>o.value===first.subjectId);
+        if(opt) subjSel.value = first.subjectId;
+      }
+      if(first.total != null) document.getElementById('qTotal').value = first.total;
+      if(first.correct != null) document.getElementById('qCorrect').value = first.correct;
+
+      // 複数科目を一括登録
+      if(parsed.results.length > 1){
+        const extra = parsed.results.slice(1);
+        extra.forEach(r => {
+          if(r.subjectId && r.total != null && r.correct != null){
+            qLogs.push({ id:'q'+Date.now()+Math.random(), date:ymd(new Date()), source:parsed.source||'', subjectId:r.subjectId, total:r.total, correct:r.correct, note:'OCR自動入力' });
+          }
+        });
+        saveQuiz();
+      }
+
+      const count = parsed.results.length;
+      statusEl.textContent = `✅ ${count}科目を読み取りました！内容を確認して「記録する」を押してください。`;
+      statusEl.style.color = 'var(--ok)';
+    } else {
+      statusEl.textContent = '⚠️ 科目データを読み取れませんでした。手動で入力してください。';
+      statusEl.style.color = '#f87171';
+    }
+  } catch(e) {
+    statusEl.textContent = `❌ エラー：${e.message}`;
+    statusEl.style.color = '#f87171';
+  } finally {
+    ocrBox.style.borderColor = 'var(--line)';
+    this.value = '';
+  }
+});
 
 </script>
 </body>

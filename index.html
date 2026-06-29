@@ -441,6 +441,7 @@
     <button class="tips-btn" id="openTipsBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
       <span class="hdr-label">今日のTips</span>
+      <span id="unreadTipsCount" style="display:none;margin-left:3px;background:#fff;color:var(--accent);border-radius:10px;padding:1px 6px;font-size:11px;font-weight:800">0</span>
     </button>
   </div>
 </header>
@@ -1010,7 +1011,6 @@ function initSyncUI(){
   document.getElementById('syncDownBtn').addEventListener('click', ()=>{
     if(confirm('クラウドのデータをこの端末に読み込みます。現在のデータは上書きされます。よろしいですか？')) syncFromCloud();
   });
-  if(getSyncKey()) syncFromCloud();
 }
 
 /* ============================================================
@@ -1775,51 +1775,135 @@ const TIPS = [
    body:`タスクを完了したときに分泌されるドーパミンをうまく活用しましょう。<ul><li>このアプリのチェックリストに✓を入れる行為自体がモチベーションを維持する</li><li>1日の目標を「○節まで読む」など小さく設定する</li><li>週次で学習記録グラフを眺めて「見える進捗」を実感する</li></ul>`},
 ];
 
+// ── お気に入り ──
+const LS_FAV = 'gyoseishoshi_favtips_v1';
+let favTips = [];
+try { const f = JSON.parse(localStorage.getItem(LS_FAV)); if (Array.isArray(f)) favTips = f; } catch(e){}
+function saveFavs(){ localStorage.setItem(LS_FAV, JSON.stringify(favTips)); scheduleSync(); }
+
+// ── Tips スケジュール管理 ──
+const LS_TIP_STATE = 'gyoseishoshi_tipstate_v1';
+const TIP_SLOTS = [8, 12, 15, 18, 20]; // 配信時刻
+const TIPS_PER_SLOT = 3;
+
+function loadTipState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_TIP_STATE));
+    if (s && typeof s.pointer === 'number' && Array.isArray(s.unread)) return s;
+  } catch(e) {}
+  return { pointer: 0, processed: {}, unread: [] };
+}
+function saveTipState(state) {
+  // 7日以上前のprocessedエントリを削除
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
+  Object.keys(state.processed).forEach(k => {
+    const p = k.split('-');
+    const kDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+    if (kDate < cutoff) delete state.processed[k];
+  });
+  localStorage.setItem(LS_TIP_STATE, JSON.stringify(state));
+}
+
+function checkTipsSchedule() {
+  const now = new Date();
+  const state = loadTipState();
+  const y = now.getFullYear(), m = now.getMonth()+1, d = now.getDate(), h = now.getHours();
+  let added = 0;
+  for (const slotHour of TIP_SLOTS) {
+    const key = `${y}-${m}-${d}-${slotHour}`;
+    if (h >= slotHour && !state.processed[key]) {
+      for (let i = 0; i < TIPS_PER_SLOT; i++) {
+        // 同じインデックスが既にunreadにある場合はスキップ
+        const next = state.pointer % TIPS.length;
+        if (!state.unread.includes(next)) state.unread.push(next);
+        state.pointer = (state.pointer + 1) % TIPS.length;
+      }
+      state.processed[key] = true;
+      added += TIPS_PER_SLOT;
+    }
+  }
+  if (added > 0) saveTipState(state);
+  else saveTipState(state); // processedの掃除のため
+  updateTipsBadge(state);
+  return added;
+}
+
+function updateTipsBadge(state) {
+  if (!state) state = loadTipState();
+  const count = state.unread.length;
+  const badge = document.getElementById('unreadTipsCount');
+  if (!badge) return;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? '' : 'none';
+}
+
+// ── Tips 表示 ──
 let tipIndex = 0;
+let _tipsMode = 'browse'; // 'browse' | 'unread'
+let _unreadQueue = [];    // 未読モード時のキューのコピー
+let _unreadPos = 0;       // キュー内の現在位置
 
 function showTip(i) {
   const t = TIPS[i];
   document.getElementById('tipCat').textContent   = t.cat;
   document.getElementById('tipTitle').textContent = t.title;
   document.getElementById('tipBody').innerHTML    = t.body;
-  document.getElementById('tipCounter').textContent = `${i + 1} / ${TIPS.length}`;
+  if (_tipsMode === 'unread') {
+    document.getElementById('tipCounter').innerHTML =
+      `📬 未読 <b>${_unreadPos + 1} / ${_unreadQueue.length}</b>`;
+    document.getElementById('prevTipBtn').style.display = 'none';
+    const nb = document.getElementById('nextTipBtn');
+    nb.textContent = _unreadPos < _unreadQueue.length - 1 ? '既読・次へ →' : '既読にして閉じる';
+  } else {
+    document.getElementById('tipCounter').textContent = `${i + 1} / ${TIPS.length}`;
+    document.getElementById('prevTipBtn').style.display = '';
+    document.getElementById('nextTipBtn').textContent = '次へ →';
+  }
   updateFavBtn();
 }
 
 function openTips(i) {
+  _tipsMode = 'browse';
   tipIndex = ((i % TIPS.length) + TIPS.length) % TIPS.length;
   showTip(tipIndex);
   document.getElementById('tipsModal').classList.add('show');
 }
 
-function closeTips() {
-  document.getElementById('tipsModal').classList.remove('show');
+function openUnreadTips() {
+  const state = loadTipState();
+  if (state.unread.length === 0) { openTips(tipIndex); return; }
+  _tipsMode = 'unread';
+  _unreadQueue = [...state.unread];
+  _unreadPos = 0;
+  tipIndex = _unreadQueue[0];
+  showTip(tipIndex);
+  document.getElementById('tipsModal').classList.add('show');
 }
 
-// ボタンイベント
-document.getElementById('openTipsBtn').addEventListener('click',  () => openTips(tipIndex));
-document.getElementById('closeTipsBtn').addEventListener('click',  closeTips);
-document.getElementById('closeTipsBtn2').addEventListener('click', closeTips);
-document.getElementById('prevTipBtn').addEventListener('click', () => {
-  tipIndex = (tipIndex - 1 + TIPS.length) % TIPS.length;
-  showTip(tipIndex);
-});
-document.getElementById('nextTipBtn').addEventListener('click', () => {
-  tipIndex = (tipIndex + 1) % TIPS.length;
-  showTip(tipIndex);
-});
+function markReadAndAdvance() {
+  // 現在のtipを既読にする
+  const state = loadTipState();
+  const readIdx = _unreadQueue[_unreadPos];
+  const pos = state.unread.indexOf(readIdx);
+  if (pos !== -1) state.unread.splice(pos, 1);
+  saveTipState(state);
+  updateTipsBadge(state);
 
-// オーバーレイ外クリックで閉じる
-document.getElementById('tipsModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeTips();
-});
+  _unreadPos++;
+  if (_unreadPos >= _unreadQueue.length) {
+    closeTips();
+  } else {
+    tipIndex = _unreadQueue[_unreadPos];
+    showTip(tipIndex);
+  }
+}
 
-// ── お気に入り ──
-const LS_FAV = 'gyoseishoshi_favtips_v1';
-let favTips = [];
-try { const f = JSON.parse(localStorage.getItem(LS_FAV)); if (Array.isArray(f)) favTips = f; } catch(e){}
-
-function saveFavs(){ localStorage.setItem(LS_FAV, JSON.stringify(favTips)); scheduleSync(); }
+function closeTips() {
+  document.getElementById('tipsModal').classList.remove('show');
+  _tipsMode = 'browse';
+  document.getElementById('prevTipBtn').style.display = '';
+  document.getElementById('nextTipBtn').textContent = '次へ →';
+}
 
 function updateFavBtn(){
   const btn = document.getElementById('favTipBtn');
@@ -1839,6 +1923,39 @@ function toggleFav(){
   updateFavBtn();
 }
 
+// ── ボタンイベント ──
+document.getElementById('openTipsBtn').addEventListener('click', () => {
+  const state = loadTipState();
+  if (state.unread.length > 0) openUnreadTips();
+  else openTips(tipIndex);
+});
+document.getElementById('closeTipsBtn').addEventListener('click',  closeTips);
+document.getElementById('closeTipsBtn2').addEventListener('click', closeTips);
+document.getElementById('prevTipBtn').addEventListener('click', () => {
+  tipIndex = (tipIndex - 1 + TIPS.length) % TIPS.length;
+  showTip(tipIndex);
+});
+document.getElementById('nextTipBtn').addEventListener('click', () => {
+  if (_tipsMode === 'unread') { markReadAndAdvance(); return; }
+  tipIndex = (tipIndex + 1) % TIPS.length;
+  showTip(tipIndex);
+});
+document.getElementById('tipsModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTips();
+});
+document.getElementById('favTipBtn').addEventListener('click', toggleFav);
+
+// ── スケジュール初期化 ──
+// ページ読み込み時：未読キューに追加（ポップアップなし）
+checkTipsSchedule();
+
+// 毎分チェック：アプリが開いている間に配信時刻になったらポップアップ
+setInterval(() => {
+  const added = checkTipsSchedule();
+  if (added > 0) openUnreadTips();
+}, 60000);
+
+// ── お気に入りモーダル ──
 function openFavModal(){
   const list = document.getElementById('favList');
   if (favTips.length === 0) {
@@ -1856,15 +1973,12 @@ function openFavModal(){
   }
   document.getElementById('favModal').classList.add('show');
 }
-
 function removeFav(i){
   favTips = favTips.filter(x => x !== i);
   saveFavs();
   updateFavBtn();
   openFavModal();
 }
-
-document.getElementById('favTipBtn').addEventListener('click', toggleFav);
 document.getElementById('openFavBtn').addEventListener('click', openFavModal);
 document.getElementById('closeFavBtn').addEventListener('click', () => document.getElementById('favModal').classList.remove('show'));
 document.getElementById('closeFavBtn2').addEventListener('click', () => document.getElementById('favModal').classList.remove('show'));
